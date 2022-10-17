@@ -264,7 +264,8 @@ public class AutoBase {
         drive(this::goSE, distanceIN, motorPower);
     }
 
-    static double TURN_CONSTANT = ((Math.sqrt(Math.pow(ROBOT_LENGTH_IN / 2.0, 2.0) + Math.pow(ROBOT_WIDTH_IN / 2.0, 2.0))) / 90.0) * 2.0;
+//    static double TURN_CONSTANT = ((Math.sqrt(Math.pow(ROBOT_LENGTH_IN / 2.0, 2.0) + Math.pow(ROBOT_WIDTH_IN / 2.0, 2.0))) / 90.0) * 2.0;
+    static double TURN_CONSTANT = 2.0 * Math.PI * Math.sqrt(Math.pow(ROBOT_LENGTH_IN, 2.0) + Math.pow(ROBOT_WIDTH_IN, 2.0) / 2.0);
 
     public void turnLeft() {
         turnLeft(90, TURN_SPEED);
