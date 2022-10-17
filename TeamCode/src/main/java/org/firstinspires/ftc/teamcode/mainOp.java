@@ -1,12 +1,3 @@
-/*
-Control Scheme:
-  Gamepad 1 - robot locomotion:
-    left stick - xy position of robot
-    right stick - rotation of robot
-    right bumper 1/2 speed slowmode
-    dpad - 1.0 power in any given direction
-*/
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -26,11 +17,12 @@ public class mainOp extends LinearOpMode {
 
     private final double GRABBER_OPEN = 0;
     private final double GRABBER_CLOSED = 1;
-    private final int ARM_LOWER_BOUND = 0; // tbd
-    private final int ARM_LOW_JUNCTION = 1; // tbd
-    private final int ARM_MEDIUM_JUNCTION = 2; // tbd
-    private final int ARM_HIGH_JUNCTION = 3; // tbd
-    private final int ARM_UPPER_BOUND = 4; // tbd
+    private final int ARM_LOWER_BOUND = -200;
+    private final int ARM_ZERO_POSITION = 0;
+    private final int ARM_LOW_JUNCTION = 2900;
+    private final int ARM_MEDIUM_JUNCTION = 4800;
+    private final int ARM_HIGH_JUNCTION = 6600;
+    private final int ARM_UPPER_BOUND = 6600;
 
     @Override
     public void runOpMode() {
@@ -44,7 +36,7 @@ public class mainOp extends LinearOpMode {
         int speed = 1;
         boolean slowmodeChanged = false;
         boolean shouldSlowmode = false;
-        boolean isGrabbing = true;
+        boolean isGrabbing = false;
         boolean changed = false;
 
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
@@ -57,13 +49,17 @@ public class mainOp extends LinearOpMode {
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         arm.setDirection(DcMotor.Direction.REVERSE);
-        grabber.setDirection(Servo.Direction.REVERSE);
-
-        grabber.setPosition(GRABBER_OPEN);
-        moveArm(ARM_LOWER_BOUND);
 
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        grabber.setPosition(GRABBER_OPEN);
+        moveArm(ARM_ZERO_POSITION);
+
+        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         AutoBase auto = new AutoBase(
                 this,
@@ -88,9 +84,6 @@ public class mainOp extends LinearOpMode {
             frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-            telemetry.addData("Control Scheme",
-                    "\nleft stick - xy position of robot\nright stick - rotation of robot\nright bumper - 1/2 speed slowmode\nleft bumper - 1/4 speed slowmode\ndpad - 1.0 power in any given direction\nclick stick - rotate that direction\n\tnone - 90\n\ty - 45\n\tb - 120\n\ta - 180\nback - turn left\nguide - turn right");
 
             while (opModeIsActive()) {
                 x = gamepad1.left_stick_x;
@@ -117,8 +110,8 @@ public class mainOp extends LinearOpMode {
 
                 fl = y + x + clockwise;
                 fr = y - x - clockwise;
-                bl = y - x + clockwise;
-                br = y + x - clockwise;
+                bl = - y - x + clockwise;
+                br = - y + x - clockwise;
 
                 if (gamepad1.right_bumper) {
                     speed = 2;
@@ -173,7 +166,7 @@ public class mainOp extends LinearOpMode {
                 backRight.setPower(br);
 
                 if (gamepad2.left_bumper) {
-                    moveArm(ARM_LOWER_BOUND);
+                    moveArm(ARM_ZERO_POSITION);
                 } else if (gamepad2.a) {
                     moveArm(ARM_LOW_JUNCTION);
                 } else if (gamepad2.b) {
@@ -184,13 +177,15 @@ public class mainOp extends LinearOpMode {
                     moveArm(ARM_UPPER_BOUND);
                 } else if (gamepad2.right_trigger > 0 || gamepad2.left_trigger > 0) {
                     if (arm.getCurrentPosition() < ARM_LOWER_BOUND) {
-                        moveArm(ARM_LOWER_BOUND);
+                        moveArm(ARM_LOWER_BOUND + 10);
                     } else if (arm.getCurrentPosition() > ARM_UPPER_BOUND) {
-                        moveArm(ARM_UPPER_BOUND);
+                        moveArm(ARM_UPPER_BOUND - 10);
                     } else {
-                        moveArm((int) (arm.getCurrentPosition() + gamepad2.right_trigger - gamepad2.left_trigger),gamepad2.right_trigger - gamepad2.left_trigger);
+                        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                        arm.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
                     }
                 }
+                telemetry.addData("Position", arm.getCurrentPosition());
 
                 if (gamepad2.x) {
                     if (!changed) {

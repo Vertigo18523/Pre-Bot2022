@@ -97,15 +97,15 @@ public class AutoBase {
     private void goForward(Object distance) {
         left_front.setTargetPosition((int) distance);
         right_front.setTargetPosition((int) distance);
-        left_back.setTargetPosition((int) distance);
-        right_back.setTargetPosition((int) distance);
+        left_back.setTargetPosition(-(int) distance);
+        right_back.setTargetPosition(-(int) distance);
     }
 
     private void goBackward(Object distance) {
         left_front.setTargetPosition(-(int) distance);
         right_front.setTargetPosition(-(int) distance);
-        left_back.setTargetPosition(-(int) distance);
-        right_back.setTargetPosition(-(int) distance);
+        left_back.setTargetPosition((int) distance);
+        right_back.setTargetPosition((int) distance);
     }
 
     private void goLeft(Object distance) {
