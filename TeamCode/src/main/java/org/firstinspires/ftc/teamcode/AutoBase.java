@@ -11,10 +11,7 @@ public class AutoBase {
     Telemetry telemetry;
     LinearOpMode opMode;
 
-    static final double TETRIX_TICKS_PER_MOTOR_REV = 1440;
-    static final double ANDYMARK_TICKS_PER_MOTOR_REV = 1120;
-    static final double GOBILDA_TICKS_PER_MOTOR_REV = 537;
-    static final double PULSES_PER_REVOLUTION = GOBILDA_TICKS_PER_MOTOR_REV;
+    static final double PULSES_PER_REVOLUTION = 384.5; //https://www.gobilda.com/5202-series-yellow-jacket-planetary-gear-motor-13-7-1-ratio-435-rpm-3-3-5v-encoder/
     static final double WHEEL_DIAMETER_IN = 4;
     static final double PULSES_PER_IN = PULSES_PER_REVOLUTION / (WHEEL_DIAMETER_IN * 3.1415);
     static double DRIVE_SPEED, TURN_SPEED, ROBOT_LENGTH_IN, ROBOT_WIDTH_IN, STRAFE_MULTIPLIER, DELAY_BETWEEN_METHODS;
