@@ -16,12 +16,12 @@ public class TestAuto extends LinearOpMode {
                 "backLeft",
                 "backRight",
                 telemetry,
-                0.25,
-                0.25,
-                14,
-                13.5,
-                1.13,
-                50
+                0.5,
+                0.5,
+                10.5,
+                12.5,
+                1.12,
+                1000
         );
         waitForStart();
         if (opModeIsActive()) {

@@ -71,8 +71,8 @@ public class mainOp extends LinearOpMode {
                 telemetry,
                 1,
                 1,
-                14,
-                13.5,
+                10.5,
+                12.5,
                 1.13,
                 100
         );
@@ -110,8 +110,8 @@ public class mainOp extends LinearOpMode {
 
                 fl = y + x + clockwise;
                 fr = y - x - clockwise;
-                bl = - y - x + clockwise;
-                br = - y + x - clockwise;
+                bl = y - x + clockwise;
+                br = y + x - clockwise;
 
                 if (gamepad1.right_bumper) {
                     speed = 2;
@@ -186,6 +186,7 @@ public class mainOp extends LinearOpMode {
                     }
                 }
                 telemetry.addData("Position", arm.getCurrentPosition());
+//                moveArm(arm.getCurrentPosition()); // Ensure arm stays locked at current position (doesn't fall down because it is continuously being pushed up)
 
                 if (gamepad2.x) {
                     if (!changed) {
