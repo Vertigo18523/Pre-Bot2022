@@ -186,7 +186,10 @@ public class mainOp extends LinearOpMode {
                     }
                 }
                 telemetry.addData("Position", arm.getCurrentPosition());
-//                moveArm(arm.getCurrentPosition()); // Ensure arm stays locked at current position (doesn't fall down because it is continuously being pushed up)
+                if (!arm.isBusy()) {
+                    arm.setPower(0);
+                    moveArm(arm.getTargetPosition());
+                }
 
                 if (gamepad2.x) {
                     if (!changed) {
@@ -211,10 +214,5 @@ public class mainOp extends LinearOpMode {
         arm.setTargetPosition(position);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setPower(motorPower * ((position < arm.getCurrentPosition()) ? -1 : 1));
-        while (arm.isBusy()) {
-            idle();
-        }
-        arm.setPower(0);
-        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }
