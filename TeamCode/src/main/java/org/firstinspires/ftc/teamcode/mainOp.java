@@ -25,7 +25,7 @@ public class mainOp extends LinearOpMode {
     private final int ARM_UPPER_BOUND = 6600;
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         float x;
         float y;
         float clockwise;

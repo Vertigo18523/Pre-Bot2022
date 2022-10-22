@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 public class TestAuto extends LinearOpMode {
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         AutoBase robot = new AutoBase(
                 this,
                 hardwareMap,
