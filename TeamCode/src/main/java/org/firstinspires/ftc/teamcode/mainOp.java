@@ -74,7 +74,11 @@ public class mainOp extends LinearOpMode {
                 10.5,
                 12.5,
                 1.13,
-                100
+                100,
+                false,
+                0,
+                0,
+                0
         );
 
         waitForStart();
@@ -181,8 +185,7 @@ public class mainOp extends LinearOpMode {
                     } else if (arm.getCurrentPosition() > ARM_UPPER_BOUND) {
                         moveArm(ARM_UPPER_BOUND - 10);
                     } else {
-                        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                        arm.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
+                        moveArm((int) ((gamepad2.right_trigger - gamepad2.left_trigger) * 100) + arm.getCurrentPosition(), gamepad2.right_trigger - gamepad2.left_trigger);
                     }
                 }
                 telemetry.addData("Position", arm.getCurrentPosition());
