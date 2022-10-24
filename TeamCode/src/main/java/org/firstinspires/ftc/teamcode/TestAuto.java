@@ -16,25 +16,20 @@ public class TestAuto extends LinearOpMode {
                 "backLeft",
                 "backRight",
                 telemetry,
-                0.5,
+                0.1,
                 0.5,
                 10.5,
                 12.5,
-                1.12,
-                1000
+                1.1,
+                1000,
+                false,
+                0,
+                0,
+                0
         );
         waitForStart();
         if (opModeIsActive()) {
             robot.driveForward(24);
-            robot.strafeLeft(24);
-            robot.driveBackward(24);
-            robot.strafeRight(24);
-            robot.turnLeft();
-            robot.strafeRight(24);
-            robot.driveForward(24);
-            robot.strafeLeft(24);
-            robot.driveBackward(24);
-            robot.turnRight();
         }
     }
 }

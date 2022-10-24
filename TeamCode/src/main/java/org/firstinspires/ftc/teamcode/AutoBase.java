@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class AutoBase {
@@ -15,6 +16,8 @@ public class AutoBase {
     static final double WHEEL_DIAMETER_IN = 3.77953; // 96 mm
     static final double PULSES_PER_IN = PULSES_PER_REVOLUTION / (WHEEL_DIAMETER_IN * Math.PI);
     static double DRIVE_SPEED, TURN_SPEED, STRAFE_MULTIPLIER, DELAY_BETWEEN_METHODS, TURN_CONSTANT;
+    static boolean USE_PID;
+    double kP, kI, kD;
 
     public AutoBase(
             LinearOpMode opMode,
@@ -24,17 +27,22 @@ public class AutoBase {
             String left_back_name,
             String right_back_name,
             Telemetry telemetry,
-            double driveSpeed, // 1.0
-            double turnSpeed, // 0.5
+            double driveSpeed, // 1.0 power
+            double turnSpeed, // 0.5 power
             double lengthInches, // front-back axle to axle
             double widthInches, // left-right wheel center to wheel center
-            double strafeMultiplier, // 1.13
-            double delay // 100
+            double strafeMultiplier, // 1.13 units
+            double delay, // 100 ms
+            boolean usePID, // https://www.ctrlaltftc.com/the-pid-controller/tuning-methods-of-a-pid-controller
+            double kP,
+            double kI,
+            double kD
     ) {
         DRIVE_SPEED = driveSpeed;
         TURN_SPEED = turnSpeed;
         STRAFE_MULTIPLIER = strafeMultiplier;
         DELAY_BETWEEN_METHODS = delay;
+        USE_PID = usePID;
         TURN_CONSTANT = (Math.PI * Math.sqrt((Math.pow(lengthInches / 2.0, 2.0) + Math.pow(widthInches / 2.0, 2.0)) / 2.0)) / 90.0;
 
         frontLeft = hardwareMap.get(DcMotor.class, left_front_name);
@@ -54,18 +62,51 @@ public class AutoBase {
 
         this.telemetry = telemetry;
         this.opMode = opMode;
-    }
-    private void sleep(double milliseconds) {
-        opMode.sleep((long) milliseconds);
-    }
-
-    private void idle() {
-        opMode.idle();
+        this.kP = kP;
+        this.kI = kI;
+        this.kD = kD;
     }
 
-    private void print(String key, String value) {
-        this.telemetry.addData(key, value);
-        this.telemetry.update();
+    private void drive(goFunction direction, double distanceIN, double motorPower) throws InterruptedException {
+        ElapsedTime timer = new ElapsedTime();
+        double proportional, integral = 0, derivative, pid, prevError = 0, totalTicks = PULSES_PER_IN * distanceIN;
+        resetEncoders();
+        direction.run((int) totalTicks);
+        if (USE_PID) {
+            setRunWithoutEncoders();
+        } else {
+            setRunToPosition();
+        }
+        setMotors(motorPower);
+        while (
+//                frontLeft.isBusy() &&
+//                        frontRight.isBusy() &&
+//                        backLeft.isBusy() &&
+//                        backRight.isBusy()
+                frontLeft.getCurrentPosition() != frontLeft.getTargetPosition()
+        ) {
+            if (USE_PID) {
+                proportional = totalTicks - frontLeft.getCurrentPosition();
+                integral += proportional * timer.seconds();
+                derivative = (proportional - prevError) / timer.seconds();
+                pid = (kP * proportional) + (kI * integral) + (kD * derivative);
+                setMotors(Math.min(pid, motorPower));
+                prevError = proportional;
+                timer.reset();
+            } else {
+                opMode.idle();
+//                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 2.0 - frontLeft.getCurrentPosition(), 2.0) + motorPower);
+                telemetry.addData("motorPower", frontLeft.getPower());
+                telemetry.update();
+            }
+        }
+        stopDriving();
+        setRunWithoutEncoders();
+        opMode.sleep((long) DELAY_BETWEEN_METHODS);
+    }
+
+    private interface goFunction {
+        void run(int distanceIN);
     }
 
     private static void setRunToPosition() {
@@ -173,144 +214,91 @@ public class AutoBase {
         backRight.setPower(power);
     }
 
-    private void drive(goFunction direction, double distanceIN, double motorPower) {
-        resetEncoders();
-        direction.run((int) (PULSES_PER_IN*distanceIN));
-        setRunToPosition();
-        setMotors(motorPower);
-        while (
-                frontLeft.isBusy() &&
-                        frontRight.isBusy() &&
-                        backLeft.isBusy() &&
-                        backRight.isBusy()
-        ) {
-            idle();
-        }
-        stopDriving();
-        setRunWithoutEncoders();
-        sleep(DELAY_BETWEEN_METHODS);
-    }
-
-    private interface goFunction {
-        void run(int distanceIN);
-    }
-
-    public void driveForward(double distanceIN) {
+    public void driveForward(double distanceIN) throws InterruptedException {
         driveForward(distanceIN, DRIVE_SPEED);
     }
 
-    public void driveForward(double distanceIN, double motorPower) {
+    public void driveForward(double distanceIN, double motorPower) throws InterruptedException {
         drive(this::goForward, distanceIN, motorPower);
     }
 
-    public void driveBackward(double distanceIN) {
+    public void driveBackward(double distanceIN) throws InterruptedException {
         driveBackward(distanceIN, DRIVE_SPEED);
     }
 
-    public void driveBackward(double distanceIN, double motorPower) {
+    public void driveBackward(double distanceIN, double motorPower) throws InterruptedException {
         drive(this::goBackward, distanceIN, motorPower);
     }
 
-    public void strafeLeft(double distanceIN) {
+    public void strafeLeft(double distanceIN) throws InterruptedException {
         strafeLeft(distanceIN, DRIVE_SPEED);
     }
 
-    public void strafeLeft(double distanceIN, double motorPower) {
+    public void strafeLeft(double distanceIN, double motorPower) throws InterruptedException {
         drive(this::goLeft, distanceIN * STRAFE_MULTIPLIER, motorPower);
     }
 
-    public void strafeRight(double distanceIN) {
+    public void strafeRight(double distanceIN) throws InterruptedException {
         strafeRight(distanceIN, DRIVE_SPEED);
     }
 
-    public void strafeRight(double distanceIN, double motorPower) {
+    public void strafeRight(double distanceIN, double motorPower) throws InterruptedException {
         drive(this::goRight, distanceIN * STRAFE_MULTIPLIER, motorPower);
     }
 
-    public void strafeNW(double distanceIN) {
+    public void strafeNW(double distanceIN) throws InterruptedException {
         strafeNW(distanceIN, DRIVE_SPEED);
     }
 
-    public void strafeNW(double distanceIN, double motorPower) {
+    public void strafeNW(double distanceIN, double motorPower) throws InterruptedException {
         drive(this::goNW, distanceIN, motorPower);
     }
 
-    public void strafeNE(double distanceIN) {
+    public void strafeNE(double distanceIN) throws InterruptedException {
         strafeNE(distanceIN, DRIVE_SPEED);
     }
 
-    public void strafeNE(double distanceIN, double motorPower) {
+    public void strafeNE(double distanceIN, double motorPower) throws InterruptedException {
         drive(this::goNE, distanceIN, motorPower);
     }
 
-    public void strafeSW(double distanceIN) {
+    public void strafeSW(double distanceIN) throws InterruptedException {
         strafeSW(distanceIN, DRIVE_SPEED);
     }
 
-    public void strafeSW(double distanceIN, double motorPower) {
+    public void strafeSW(double distanceIN, double motorPower) throws InterruptedException {
         drive(this::goSW, distanceIN, motorPower);
     }
 
-    public void strafeSE(double distanceIN) {
+    public void strafeSE(double distanceIN) throws InterruptedException {
         strafeSE(distanceIN, DRIVE_SPEED);
     }
 
-    public void strafeSE(double distanceIN, double motorPower) {
+    public void strafeSE(double distanceIN, double motorPower) throws InterruptedException {
         drive(this::goSE, distanceIN, motorPower);
     }
 
-    public void turnLeft() {
+    public void turnLeft() throws InterruptedException {
         turnLeft(90, TURN_SPEED);
     }
 
-    public void turnLeft(int degrees) {
+    public void turnLeft(int degrees) throws InterruptedException {
         turnLeft(degrees, TURN_SPEED);
     }
 
-    public void turnLeft(int degrees, double motorPower) {
+    public void turnLeft(int degrees, double motorPower) throws InterruptedException {
         drive(this::goTurnLeft, (int) (TURN_CONSTANT * degrees), motorPower);
     }
 
-    public void turnRight() {
+    public void turnRight() throws InterruptedException {
         turnRight(90, TURN_SPEED);
     }
 
-    public void turnRight(int degrees) {
+    public void turnRight(int degrees) throws InterruptedException {
         turnRight(degrees, TURN_SPEED);
     }
 
-    public void turnRight(int degrees, double motorPower) {
+    public void turnRight(int degrees, double motorPower) throws InterruptedException {
         drive(this::goTurnRight, (int) (TURN_CONSTANT * degrees), motorPower);
     }
 }
-
-/*
-    // During init:
-    AutoBase auto = new AutoBase(
-        this,
-        hardwareMap,
-        "frontLeft",
-        "frontRight",
-        "backLeft",
-        "backRight",
-        telemetry,
-        1,
-        1,
-        18,
-        18,
-        1.13,
-        100
-    );
-
-    // During run loop:
-    auto.driveForward(12);
-    auto.driveBackward(12);
-    auto.strafeLeft(12);
-    auto.strafeRight(12);
-    auto.strafeNW(12);
-    auto.strafeNE(12);
-    auto.strafeSW(12);
-    auto.strafeSE(12);
-    auto.turnLeft(90);
-    auto.turnRight(90);
-*/
