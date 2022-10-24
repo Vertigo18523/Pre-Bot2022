@@ -17,12 +17,13 @@ public class mainOp extends LinearOpMode {
 
     private final double GRABBER_OPEN = 0;
     private final double GRABBER_CLOSED = 1;
-    private final int ARM_LOWER_BOUND = -200;
+    private final double PULSES_PER_REVOLUTION = 751.8; // gobilda 5202 223 rpm
+    private final int ARM_LOWER_BOUND = - (int) (0.266 * PULSES_PER_REVOLUTION);
     private final int ARM_ZERO_POSITION = 0;
-    private final int ARM_LOW_JUNCTION = 2900;
-    private final int ARM_MEDIUM_JUNCTION = 4800;
-    private final int ARM_HIGH_JUNCTION = 6600;
-    private final int ARM_UPPER_BOUND = 6600;
+    private final int ARM_LOW_JUNCTION = (int) (3.857 * PULSES_PER_REVOLUTION);
+    private final int ARM_MEDIUM_JUNCTION = (int) (6.385 * PULSES_PER_REVOLUTION);
+    private final int ARM_HIGH_JUNCTION = (int) (8.779 * PULSES_PER_REVOLUTION);
+    private final int ARM_UPPER_BOUND = (int) (8.779 * PULSES_PER_REVOLUTION);
 
     @Override
     public void runOpMode() throws InterruptedException {
