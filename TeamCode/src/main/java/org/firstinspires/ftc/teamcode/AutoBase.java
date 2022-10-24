@@ -79,10 +79,7 @@ public class AutoBase {
         }
         setMotors(motorPower);
         while (
-//                frontLeft.isBusy() &&
-//                        frontRight.isBusy() &&
-//                        backLeft.isBusy() &&
-//                        backRight.isBusy()
+//                frontLeft.isBusy()
                 frontLeft.getCurrentPosition() != frontLeft.getTargetPosition()
         ) {
             if (USE_PID) {
@@ -94,7 +91,8 @@ public class AutoBase {
                 prevError = proportional;
                 timer.reset();
             } else {
-                opMode.idle();
+//                opMode.idle();
+                setMotors(totalTicks / 2.0 > frontLeft.getCurrentPosition() ? 1 : 0.5);
 //                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 2.0 - frontLeft.getCurrentPosition(), 2.0) + motorPower);
                 telemetry.addData("motorPower", frontLeft.getPower());
                 telemetry.update();
