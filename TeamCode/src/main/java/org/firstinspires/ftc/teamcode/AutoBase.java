@@ -79,8 +79,8 @@ public class AutoBase {
         }
         setMotors(motorPower);
         while (
-//                frontLeft.isBusy()
-                frontLeft.getCurrentPosition() != frontLeft.getTargetPosition()
+                frontLeft.isBusy()
+//                frontLeft.getCurrentPosition() != frontLeft.getTargetPosition()
         ) {
             if (USE_PID) {
                 proportional = totalTicks - frontLeft.getCurrentPosition();
