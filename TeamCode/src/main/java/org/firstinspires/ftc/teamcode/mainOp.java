@@ -217,6 +217,6 @@ public class mainOp extends LinearOpMode {
     private void moveArm(int position, double motorPower) {
         arm.setTargetPosition(position);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        arm.setPower(motorPower * ((position < arm.getCurrentPosition()) ? -1 : 1));
+        arm.setPower(motorPower);
     }
 }
