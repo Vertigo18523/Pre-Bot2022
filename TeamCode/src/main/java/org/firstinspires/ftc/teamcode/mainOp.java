@@ -25,6 +25,9 @@ public class mainOp extends LinearOpMode {
     private final int ARM_HIGH_JUNCTION = (int) (8.779 * PULSES_PER_REVOLUTION);
     private final int ARM_UPPER_BOUND = (int) (8.779 * PULSES_PER_REVOLUTION);
 
+    private double MotorPower;
+    private double TotalTicks;
+
     @Override
     public void runOpMode() throws InterruptedException {
         float x;
@@ -190,7 +193,10 @@ public class mainOp extends LinearOpMode {
                     }
                 }
                 telemetry.addData("Position", arm.getCurrentPosition());
-                if (!arm.isBusy()) {
+                if (arm.isBusy()) {
+//                    arm.setPower(MotorPower);
+                    arm.setPower(TotalTicks / 0.75 > arm.getCurrentPosition() ? MotorPower : MotorPower / 4.0);
+                } else {
                     arm.setPower(0);
                     moveArm(arm.getTargetPosition());
                 }
@@ -217,6 +223,8 @@ public class mainOp extends LinearOpMode {
     private void moveArm(int position, double motorPower) {
         arm.setTargetPosition(position);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        arm.setPower(motorPower);
+//        arm.setPower(motorPower);
+        MotorPower = motorPower;
+        TotalTicks = position;
     }
 }

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -21,7 +23,7 @@ public class AutoBase {
 
     public AutoBase(
             LinearOpMode opMode,
-            HardwareMap hardwareMap,
+            @NonNull HardwareMap hardwareMap,
             String left_front_name,
             String right_front_name,
             String left_back_name,
@@ -67,7 +69,7 @@ public class AutoBase {
         this.kD = kD;
     }
 
-    private void drive(goFunction direction, double distanceIN, double motorPower) throws InterruptedException {
+    private void drive(@NonNull goFunction direction, double distanceIN, double motorPower) throws InterruptedException {
         ElapsedTime timer = new ElapsedTime();
         double proportional, integral = 0, derivative, pid, prevError = 0, totalTicks = PULSES_PER_IN * distanceIN;
         resetEncoders();
@@ -77,10 +79,9 @@ public class AutoBase {
         } else {
             setRunToPosition();
         }
-        setMotors(motorPower);
+//        setMotors(motorPower);
         while (
                 frontLeft.isBusy()
-//                frontLeft.getCurrentPosition() != frontLeft.getTargetPosition()
         ) {
             if (USE_PID) {
                 proportional = totalTicks - frontLeft.getCurrentPosition();
@@ -104,7 +105,7 @@ public class AutoBase {
     }
 
     private interface goFunction {
-        void run(int distanceIN);
+        void run(int distanceTicks);
     }
 
     private static void setRunToPosition() {
