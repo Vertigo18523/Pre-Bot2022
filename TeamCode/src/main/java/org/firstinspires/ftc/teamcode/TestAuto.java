@@ -15,6 +15,7 @@ public class TestAuto extends LinearOpMode {
                 "frontRight",
                 "backLeft",
                 "backRight",
+                "Webcam 1",
                 telemetry,
                 0.1,
                 0.5,

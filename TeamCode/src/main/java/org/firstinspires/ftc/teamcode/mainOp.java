@@ -17,7 +17,7 @@ public class mainOp extends LinearOpMode {
 
     private final double GRABBER_OPEN = 0;
     private final double GRABBER_CLOSED = 1;
-    private final double PULSES_PER_REVOLUTION = 145.1; // gobilda 5202 1150 rpm
+    private final double PULSES_PER_REVOLUTION = 384.5; // gobilda 5202 435 rpm
     private final int ARM_LOWER_BOUND = - (int) (0.266 * PULSES_PER_REVOLUTION);
     private final int ARM_ZERO_POSITION = 0;
     private final int ARM_LOW_JUNCTION = (int) (3.857 * PULSES_PER_REVOLUTION);
@@ -72,6 +72,7 @@ public class mainOp extends LinearOpMode {
                 "frontRight",
                 "backLeft",
                 "backRight",
+                null,
                 telemetry,
                 1,
                 1,

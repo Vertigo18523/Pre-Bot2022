@@ -17,6 +17,7 @@ public class SleeveDetection extends OpenCvPipeline {
      */
 
     public enum ParkingPosition {
+        DEFAULT,
         LEFT,
         CENTER,
         RIGHT
@@ -57,7 +58,7 @@ public class SleeveDetection extends OpenCvPipeline {
             SLEEVE_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
 
     // Running variable storing the parking position
-    private volatile ParkingPosition position = ParkingPosition.LEFT;
+    private volatile ParkingPosition position = ParkingPosition.DEFAULT;
 
     @Override
     public Mat processFrame(Mat input) {

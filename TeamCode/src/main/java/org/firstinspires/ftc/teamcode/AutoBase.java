@@ -7,27 +7,34 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 public class AutoBase {
     static DcMotor frontLeft, frontRight, backLeft, backRight;
 
-    Telemetry telemetry;
-    LinearOpMode opMode;
+    private final Telemetry telemetry;
+    private final LinearOpMode opMode;
+    private OpenCvCamera camera = null;
+    private SleeveDetection sleeveDetection = null;
 
-    static final double PULSES_PER_REVOLUTION = 384.5; // 435 rpm goBilda 5202
-    static final double WHEEL_DIAMETER_IN = 3.77953; // 96 mm
-    static final double PULSES_PER_IN = PULSES_PER_REVOLUTION / (WHEEL_DIAMETER_IN * Math.PI);
-    static double DRIVE_SPEED, TURN_SPEED, STRAFE_MULTIPLIER, DELAY_BETWEEN_METHODS, TURN_CONSTANT;
-    static boolean USE_PID;
-    double kP, kI, kD;
+    private static final double PULSES_PER_REVOLUTION = 384.5; // 435 rpm goBilda 5202
+    private static final double WHEEL_DIAMETER_IN = 3.77953; // 96 mm
+    private static final double PULSES_PER_IN = PULSES_PER_REVOLUTION / (WHEEL_DIAMETER_IN * Math.PI);
+    private static double DRIVE_SPEED, TURN_SPEED, STRAFE_MULTIPLIER, DELAY_BETWEEN_METHODS, TURN_CONSTANT;
+    private static boolean USE_PID;
+    private final double kP, kI, kD;
 
     public AutoBase(
             LinearOpMode opMode,
             @NonNull HardwareMap hardwareMap,
-            String left_front_name,
-            String right_front_name,
-            String left_back_name,
-            String right_back_name,
+            String leftFrontName,
+            String rightFrontName,
+            String leftBackName,
+            String rightBackName,
+            String cameraName,
             Telemetry telemetry,
             double driveSpeed, // 1.0 power
             double turnSpeed, // 0.5 power
@@ -47,10 +54,10 @@ public class AutoBase {
         USE_PID = usePID;
         TURN_CONSTANT = (Math.PI * Math.sqrt((Math.pow(lengthInches / 2.0, 2.0) + Math.pow(widthInches / 2.0, 2.0)) / 2.0)) / 90.0;
 
-        frontLeft = hardwareMap.get(DcMotor.class, left_front_name);
-        frontRight = hardwareMap.get(DcMotor.class, right_front_name);
-        backLeft = hardwareMap.get(DcMotor.class, left_back_name);
-        backRight = hardwareMap.get(DcMotor.class, right_back_name);
+        frontLeft = hardwareMap.get(DcMotor.class, leftFrontName);
+        frontRight = hardwareMap.get(DcMotor.class, rightFrontName);
+        backLeft = hardwareMap.get(DcMotor.class, leftBackName);
+        backRight = hardwareMap.get(DcMotor.class, rightBackName);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -62,11 +69,37 @@ public class AutoBase {
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
 
+        if (cameraName != null) {
+            camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, cameraName), hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()));
+            sleeveDetection = new SleeveDetection();
+            camera.setPipeline(sleeveDetection);
+
+            camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+                @Override
+                public void onOpened() {
+                    camera.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_RIGHT);
+                }
+
+                @Override
+                public void onError(int errorCode) {
+                }
+            });
+
+            while (!opMode.isStarted()) {
+                telemetry.addData("Rotation", getSleeveRotation());
+                telemetry.update();
+            }
+        }
+
         this.telemetry = telemetry;
         this.opMode = opMode;
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
+    }
+
+    public SleeveDetection.ParkingPosition getSleeveRotation() {
+        return sleeveDetection.getPosition();
     }
 
     private void drive(@NonNull goFunction direction, double distanceIN, double motorPower) throws InterruptedException {
