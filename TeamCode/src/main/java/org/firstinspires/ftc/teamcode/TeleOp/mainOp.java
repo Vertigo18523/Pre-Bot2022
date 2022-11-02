@@ -7,7 +7,12 @@ import org.firstinspires.ftc.teamcode.Bots.PreBot;
 
 @TeleOp
 public class mainOp extends BaseOpMode {
-    PreBot robot = new PreBot();
+    public PreBot robot;
+
+    @Override
+    public void onInit() {
+        this.robot = new PreBot();
+    }
 
     @Override
     public void onUpdate() {
