@@ -32,18 +32,19 @@ public class SleeveDetection extends OpenCvPipeline {
 
     // Lower and upper boundaries for colors
     private static final Scalar
-            lower_yellow_bounds  = new Scalar(200, 200, 0, 255),
-            upper_yellow_bounds  = new Scalar(255, 255, 130, 255),
-            lower_cyan_bounds    = new Scalar(0, 200, 200, 255),
-            upper_cyan_bounds    = new Scalar(150, 255, 255, 255),
-            lower_magenta_bounds = new Scalar(170, 0, 170, 255),
-            upper_magenta_bounds = new Scalar(255, 60, 255, 255);
+            lower_yellow_bounds  = new Scalar(100, 100, 0, 255),
+            upper_yellow_bounds  = new Scalar(255, 255, 200, 255),
+            lower_cyan_bounds    = new Scalar(0, 100, 100, 255),
+            upper_cyan_bounds    = new Scalar(200, 255, 255, 255),
+            lower_magenta_bounds = new Scalar(100, 0, 100, 255),
+            upper_magenta_bounds = new Scalar(255, 200, 255, 255);
 
     // Color definitions
     private final Scalar
             YELLOW  = new Scalar(255, 255, 0),
             CYAN    = new Scalar(0, 255, 255),
-            MAGENTA = new Scalar(255, 0, 255);
+            MAGENTA = new Scalar(255, 0, 255),
+            WHITE = new Scalar(255, 255, 255);
 
     // Percent and mat definitions
     private double yelPercent, cyaPercent, magPercent;
@@ -110,6 +111,15 @@ public class SleeveDetection extends OpenCvPipeline {
                     sleeve_pointA,
                     sleeve_pointB,
                     MAGENTA,
+                    2
+            );
+        } else {
+            position = ParkingPosition.DEFAULT;
+            Imgproc.rectangle(
+                    input,
+                    sleeve_pointA,
+                    sleeve_pointB,
+                    WHITE,
                     2
             );
         }
