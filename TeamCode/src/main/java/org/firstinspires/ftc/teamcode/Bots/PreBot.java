@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Bots;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -10,7 +9,6 @@ import org.firstinspires.ftc.teamcode.Components.Arm;
 import org.firstinspires.ftc.teamcode.Components.Grabber;
 import org.firstinspires.ftc.teamcode.Components.AutoMecanum;
 
-@TeleOp
 public class PreBot extends Robot {
     public AutoMecanum mecanum;
     public Arm arm;

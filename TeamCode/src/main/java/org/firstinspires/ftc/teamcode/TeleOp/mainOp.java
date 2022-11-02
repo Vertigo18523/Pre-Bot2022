@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.teamcode.Base.BaseOpMode;
 import org.firstinspires.ftc.teamcode.Bots.PreBot;
 
+@TeleOp
 public class mainOp extends BaseOpMode {
     PreBot robot = new PreBot();
 
