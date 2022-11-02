@@ -3,21 +3,20 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Base.AutoBase;
+import org.firstinspires.ftc.teamcode.Components.AutoMecanum;
 
 @Autonomous
 public class TestAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        AutoBase robot = new AutoBase(
+        AutoMecanum robot = new AutoMecanum(
                 this,
-                hardwareMap,
                 "frontLeft",
                 "frontRight",
                 "backLeft",
                 "backRight",
-                "Webcam 1",
+                hardwareMap,
                 telemetry,
                 0.1,
                 0.5,

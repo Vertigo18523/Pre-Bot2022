@@ -7,12 +7,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Base.Component;
 
 public class Mecanum implements Component {
-    private final DcMotor frontLeft;
-    private final DcMotor backLeft;
-    private final DcMotor frontRight;
-    private final DcMotor backRight;
+    public final DcMotor frontLeft;
+    public final DcMotor backLeft;
+    public final DcMotor frontRight;
+    public final DcMotor backRight;
 
-    private final Telemetry telemetry;
+    public final Telemetry telemetry;
 
     public float x;
     public float y;

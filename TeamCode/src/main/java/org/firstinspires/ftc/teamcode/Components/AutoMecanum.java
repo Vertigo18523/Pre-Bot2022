@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Base;
+package org.firstinspires.ftc.teamcode.Components;
 
 import androidx.annotation.NonNull;
 
@@ -7,18 +7,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.firstinspires.ftc.teamcode.Base.Component;
 
-public class AutoBase {
-    static DcMotor frontLeft, frontRight, backLeft, backRight;
-
-    private final Telemetry telemetry;
+public class AutoMecanum implements Component {
+    public final Mecanum mecanum;
     private final LinearOpMode opMode;
-    private OpenCvCamera camera = null;
-    private SleeveDetection sleeveDetection = null;
 
     private static final double PULSES_PER_REVOLUTION = 384.5; // 435 rpm goBilda 5202
     private static final double WHEEL_DIAMETER_IN = 3.77953; // 96 mm
@@ -27,14 +20,13 @@ public class AutoBase {
     private static boolean USE_PID;
     private final double kP, kI, kD;
 
-    public AutoBase(
+    public AutoMecanum(
             LinearOpMode opMode,
-            @NonNull HardwareMap hardwareMap,
             String leftFrontName,
             String rightFrontName,
             String leftBackName,
             String rightBackName,
-            String cameraName,
+            @NonNull HardwareMap hardwareMap,
             Telemetry telemetry,
             double driveSpeed, // 1.0 power
             double turnSpeed, // 0.5 power
@@ -54,52 +46,19 @@ public class AutoBase {
         USE_PID = usePID;
         TURN_CONSTANT = (Math.PI * Math.sqrt((Math.pow(lengthInches / 2.0, 2.0) + Math.pow(widthInches / 2.0, 2.0)) / 2.0)) / 90.0;
 
-        frontLeft = hardwareMap.get(DcMotor.class, leftFrontName);
-        frontRight = hardwareMap.get(DcMotor.class, rightFrontName);
-        backLeft = hardwareMap.get(DcMotor.class, leftBackName);
-        backRight = hardwareMap.get(DcMotor.class, rightBackName);
+        mecanum = new Mecanum(
+                leftFrontName,
+                rightFrontName,
+                leftBackName,
+                rightBackName,
+                hardwareMap,
+                telemetry
+        );
 
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
-
-        if (cameraName != null) {
-            camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, cameraName), hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()));
-            sleeveDetection = new SleeveDetection();
-            camera.setPipeline(sleeveDetection);
-
-            camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                @Override
-                public void onOpened() {
-                    camera.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_RIGHT);
-                }
-
-                @Override
-                public void onError(int errorCode) {
-                }
-            });
-
-            while (!opMode.isStarted()) {
-                telemetry.addData("Rotation", getSleeveRotation());
-                telemetry.update();
-            }
-        }
-
-        this.telemetry = telemetry;
         this.opMode = opMode;
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
-    }
-
-    public SleeveDetection.ParkingPosition getSleeveRotation() {
-        return sleeveDetection.getPosition();
     }
 
     private void drive(@NonNull goFunction direction, double distanceIN, double motorPower) throws InterruptedException {
@@ -114,10 +73,10 @@ public class AutoBase {
         }
 //        setMotors(motorPower);
         while (
-                frontLeft.isBusy()
+                mecanum.frontLeft.isBusy()
         ) {
             if (USE_PID) {
-                proportional = totalTicks - frontLeft.getCurrentPosition();
+                proportional = totalTicks - mecanum.frontLeft.getCurrentPosition();
                 integral += proportional * timer.seconds();
                 derivative = (proportional - prevError) / timer.seconds();
                 pid = (kP * proportional) + (kI * integral) + (kD * derivative);
@@ -126,10 +85,10 @@ public class AutoBase {
                 timer.reset();
             } else {
 //                opMode.idle();
-                setMotors(totalTicks / 2.0 > frontLeft.getCurrentPosition() ? 1 : 0.5);
-//                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 2.0 - frontLeft.getCurrentPosition(), 2.0) + motorPower);
-                telemetry.addData("motorPower", frontLeft.getPower());
-                telemetry.update();
+                setMotors(totalTicks / 2.0 > mecanum.frontLeft.getCurrentPosition() ? 1 : 0.5);
+//                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + motorPower);
+                mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
+                mecanum.telemetry.update();
             }
         }
         stopDriving();
@@ -137,113 +96,128 @@ public class AutoBase {
         opMode.sleep((long) DELAY_BETWEEN_METHODS);
     }
 
+    @Override
+    public void init() {
+        mecanum.init();
+    }
+
+    @Override
+    public void start() {
+        mecanum.start();
+    }
+
+    @Override
+    public void update() {
+        mecanum.update();
+    }
+
     private interface goFunction {
         void run(int distanceTicks);
     }
 
-    private static void setRunToPosition() {
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    private void setRunToPosition() {
+        mecanum.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        mecanum.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        mecanum.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        mecanum.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    private static void resetEncoders() {
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    private void resetEncoders() {
+        mecanum.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        mecanum.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        mecanum.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        mecanum.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    private static void setRunWithoutEncoders() {
-        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    private void setRunWithoutEncoders() {
+        mecanum.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        mecanum.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        mecanum.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        mecanum.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     private void goForward(Object distance) {
-        frontLeft.setTargetPosition((int) distance);
-        frontRight.setTargetPosition((int) distance);
-        backLeft.setTargetPosition((int) distance);
-        backRight.setTargetPosition((int) distance);
+        mecanum.frontLeft.setTargetPosition((int) distance);
+        mecanum.frontRight.setTargetPosition((int) distance);
+        mecanum.backLeft.setTargetPosition((int) distance);
+        mecanum.backRight.setTargetPosition((int) distance);
     }
 
     private void goBackward(Object distance) {
-        frontLeft.setTargetPosition(-(int) distance);
-        frontRight.setTargetPosition(-(int) distance);
-        backLeft.setTargetPosition(-(int) distance);
-        backRight.setTargetPosition(-(int) distance);
+        mecanum.frontLeft.setTargetPosition(-(int) distance);
+        mecanum.frontRight.setTargetPosition(-(int) distance);
+        mecanum.backLeft.setTargetPosition(-(int) distance);
+        mecanum.backRight.setTargetPosition(-(int) distance);
     }
 
     private void goLeft(Object distance) {
-        frontLeft.setTargetPosition(-(int) distance);
-        frontRight.setTargetPosition((int) distance);
-        backLeft.setTargetPosition((int) distance);
-        backRight.setTargetPosition(-(int) distance);
+        mecanum.frontLeft.setTargetPosition(-(int) distance);
+        mecanum.frontRight.setTargetPosition((int) distance);
+        mecanum.backLeft.setTargetPosition((int) distance);
+        mecanum.backRight.setTargetPosition(-(int) distance);
     }
 
     private void goRight(Object distance) {
-        frontLeft.setTargetPosition((int) distance);
-        frontRight.setTargetPosition(-(int) distance);
-        backLeft.setTargetPosition(-(int) distance);
-        backRight.setTargetPosition((int) distance);
+        mecanum.frontLeft.setTargetPosition((int) distance);
+        mecanum.frontRight.setTargetPosition(-(int) distance);
+        mecanum.backLeft.setTargetPosition(-(int) distance);
+        mecanum.backRight.setTargetPosition((int) distance);
     }
 
     private void goNW(Object distance) {
-        frontLeft.setTargetPosition(0);
-        frontRight.setTargetPosition((int) distance);
-        backLeft.setTargetPosition((int) distance);
-        backRight.setTargetPosition(0);
+        mecanum.frontLeft.setTargetPosition(0);
+        mecanum.frontRight.setTargetPosition((int) distance);
+        mecanum.backLeft.setTargetPosition((int) distance);
+        mecanum.backRight.setTargetPosition(0);
     }
 
     private void goNE(Object distance) {
-        frontLeft.setTargetPosition((int) distance);
-        frontRight.setTargetPosition(0);
-        backLeft.setTargetPosition(0);
-        backRight.setTargetPosition((int) distance);
+        mecanum.frontLeft.setTargetPosition((int) distance);
+        mecanum.frontRight.setTargetPosition(0);
+        mecanum.backLeft.setTargetPosition(0);
+        mecanum.backRight.setTargetPosition((int) distance);
     }
 
     private void goSW(Object distance) {
-        frontLeft.setTargetPosition(-(int) distance);
-        frontRight.setTargetPosition(0);
-        backLeft.setTargetPosition(0);
-        backRight.setTargetPosition(-(int) distance);
+        mecanum.frontLeft.setTargetPosition(-(int) distance);
+        mecanum.frontRight.setTargetPosition(0);
+        mecanum.backLeft.setTargetPosition(0);
+        mecanum.backRight.setTargetPosition(-(int) distance);
     }
 
     private void goSE(Object distance) {
-        frontLeft.setTargetPosition(0);
-        frontRight.setTargetPosition(-(int) distance);
-        backLeft.setTargetPosition(-(int) distance);
-        backRight.setTargetPosition(0);
+        mecanum.frontLeft.setTargetPosition(0);
+        mecanum.frontRight.setTargetPosition(-(int) distance);
+        mecanum.backLeft.setTargetPosition(-(int) distance);
+        mecanum.backRight.setTargetPosition(0);
     }
 
     private void goTurnLeft(Object distance) {
-        frontLeft.setTargetPosition(-(int) distance);
-        frontRight.setTargetPosition((int) distance);
-        backLeft.setTargetPosition(-(int) distance);
-        backRight.setTargetPosition((int) distance);
+        mecanum.frontLeft.setTargetPosition(-(int) distance);
+        mecanum.frontRight.setTargetPosition((int) distance);
+        mecanum.backLeft.setTargetPosition(-(int) distance);
+        mecanum.backRight.setTargetPosition((int) distance);
     }
 
     private void goTurnRight(Object distance) {
-        frontLeft.setTargetPosition((int) distance);
-        frontRight.setTargetPosition(-(int) distance);
-        backLeft.setTargetPosition((int) distance);
-        backRight.setTargetPosition(-(int) distance);
+        mecanum.frontLeft.setTargetPosition((int) distance);
+        mecanum.frontRight.setTargetPosition(-(int) distance);
+        mecanum.backLeft.setTargetPosition((int) distance);
+        mecanum.backRight.setTargetPosition(-(int) distance);
     }
 
-    private static void stopDriving() {
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
+    private void stopDriving() {
+        mecanum.frontLeft.setPower(0);
+        mecanum.frontRight.setPower(0);
+        mecanum.backLeft.setPower(0);
+        mecanum.backRight.setPower(0);
     }
 
-    private static void setMotors(double power) {
-        frontLeft.setPower(power);
-        frontRight.setPower(power);
-        backLeft.setPower(power);
-        backRight.setPower(power);
+    private void setMotors(double power) {
+        mecanum.frontLeft.setPower(power);
+        mecanum.frontRight.setPower(power);
+        mecanum.backLeft.setPower(power);
+        mecanum.backRight.setPower(power);
     }
 
     public void driveForward(double distanceIN) throws InterruptedException {
@@ -311,7 +285,7 @@ public class AutoBase {
     }
 
     public void turnLeft() throws InterruptedException {
-        turnLeft(90, TURN_SPEED);
+        turnLeft(90);
     }
 
     public void turnLeft(int degrees) throws InterruptedException {
@@ -323,7 +297,7 @@ public class AutoBase {
     }
 
     public void turnRight() throws InterruptedException {
-        turnRight(90, TURN_SPEED);
+        turnRight(90);
     }
 
     public void turnRight(int degrees) throws InterruptedException {
@@ -332,5 +306,29 @@ public class AutoBase {
 
     public void turnRight(int degrees, double motorPower) throws InterruptedException {
         drive(this::goTurnRight, (int) (TURN_CONSTANT * degrees), motorPower);
+    }
+
+    public void setInitialDirections(double y, double x, double clockwise) {
+        mecanum.setInitialDirections(y, x, clockwise);
+    }
+
+    public void setFullSpeed() {
+        mecanum.setFullSpeed();
+    }
+
+    public void setHalfSpeed() {
+        mecanum.setHalfSpeed();
+    }
+
+    public void setQuarterSpeed() {
+        mecanum.setQuarterSpeed();
+    }
+
+    public void buttonPressed() {
+        mecanum.buttonPressed();
+    }
+
+    public void buttonReleased() {
+        mecanum.buttonReleased();
     }
 }
