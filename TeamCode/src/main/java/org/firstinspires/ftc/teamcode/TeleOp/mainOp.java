@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Base.BaseOpMode;
+import org.firstinspires.ftc.teamcode.Base.Robot;
 import org.firstinspires.ftc.teamcode.Bots.PreBot;
 
 @TeleOp
@@ -10,13 +11,13 @@ public class mainOp extends BaseOpMode {
     public PreBot robot;
 
     @Override
-    public void onInit() {
+    protected Robot setRobot() {
         this.robot = new PreBot();
+        return this.robot;
     }
 
     @Override
-    public void onUpdate() {
-       // drivetrain
+    public void onUpdate() throws InterruptedException {
         if (gamepad1.dpad_up) {
             robot.mecanum.mecanum.driveForward();
         } else if (gamepad1.dpad_down) {
@@ -47,15 +48,12 @@ public class mainOp extends BaseOpMode {
             robot.mecanum.buttonReleased();
         }
 
-        robot.mecanum.update();
-
         if (gamepad1.left_stick_button) {
             robot.mecanum.mecanum.turnLeft();
         } else if (gamepad1.right_stick_button) {
             robot.mecanum.mecanum.turnRight();
         }
 
-        // arm
         if (gamepad2.left_bumper) {
             robot.arm.move(robot.arm.ZERO_POSITION);
         } else if (gamepad2.a) {
@@ -75,17 +73,12 @@ public class mainOp extends BaseOpMode {
                 robot.arm.move((int) ((gamepad2.right_trigger - gamepad2.left_trigger) * 100) + robot.arm.getCurrentPosition(), gamepad2.right_trigger - gamepad2.left_trigger);
             }
         }
-//        new Action(arm::update, true);
-        robot.arm.update();
 
-        // grabber
         if (gamepad2.x) {
             robot.grabber.buttonPressed();
         } else {
             robot.grabber.buttonReleased();
         }
-//        new Action(grabber::update, true);
-        robot.grabber.update();
 
         telemetry.update();
     }

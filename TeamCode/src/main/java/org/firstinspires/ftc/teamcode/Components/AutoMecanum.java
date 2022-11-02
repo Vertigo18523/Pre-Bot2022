@@ -48,8 +48,8 @@ public class AutoMecanum implements Component {
 
         mecanum = new Mecanum(
                 leftFrontName,
-                rightFrontName,
                 leftBackName,
+                rightFrontName,
                 rightBackName,
                 hardwareMap,
                 telemetry
@@ -71,7 +71,6 @@ public class AutoMecanum implements Component {
         } else {
             setRunToPosition();
         }
-//        setMotors(motorPower);
         while (
                 mecanum.frontLeft.isBusy()
         ) {
@@ -84,8 +83,8 @@ public class AutoMecanum implements Component {
                 prevError = proportional;
                 timer.reset();
             } else {
-//                opMode.idle();
-                setMotors(totalTicks / 2.0 > mecanum.frontLeft.getCurrentPosition() ? 1 : 0.5);
+                setMotors(motorPower); opMode.idle();
+//                setMotors(totalTicks / 2.0 > mecanum.frontLeft.getCurrentPosition() ? 1 : 0.5);
 //                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + motorPower);
                 mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
                 mecanum.telemetry.update();

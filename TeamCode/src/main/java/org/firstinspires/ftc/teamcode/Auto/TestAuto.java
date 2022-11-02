@@ -3,35 +3,23 @@ package org.firstinspires.ftc.teamcode.Auto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Base.BaseOpMode;
+import org.firstinspires.ftc.teamcode.Base.Robot;
+import org.firstinspires.ftc.teamcode.Bots.PreBot;
 import org.firstinspires.ftc.teamcode.Components.AutoMecanum;
 
 @Autonomous
-public class TestAuto extends LinearOpMode {
+public class TestAuto extends BaseOpMode {
+    public PreBot robot;
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        AutoMecanum robot = new AutoMecanum(
-                this,
-                "frontLeft",
-                "frontRight",
-                "backLeft",
-                "backRight",
-                hardwareMap,
-                telemetry,
-                0.1,
-                0.5,
-                10.5,
-                12.5,
-                1.1,
-                1000,
-                false,
-                0,
-                0,
-                0
-        );
-        waitForStart();
-        if (opModeIsActive()) {
-            robot.driveForward(24);
-        }
+    public Robot setRobot() {
+        this.robot = new PreBot();
+        return this.robot;
+    }
+
+    @Override
+    public void onStart() throws InterruptedException {
+        robot.mecanum.driveForward(24);
     }
 }

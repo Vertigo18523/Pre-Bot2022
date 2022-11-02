@@ -51,13 +51,13 @@ public class Arm implements Component {
     public void update() {
         telemetry.addData("Position", getCurrentPosition());
         if (isBusy()) {
-//            setPower(MotorPower);
+            setPower(MotorPower);
 //            if (Math.max(TotalTicks, StartingPosition) == TotalTicks) {
 //                setPower(TotalTicks / 2.0 > getCurrentPosition() ? 1 : 0.1);
 //            } else {
 //                setPower(TotalTicks / 2.0 < getCurrentPosition() ? 1 : 0.1);
 //            }
-            setPower(((-4.0 * MotorPower) / Math.pow(TotalTicks, 2.0)) * Math.pow(TotalTicks / 2.0 - getCurrentPosition(), 2.0) + MotorPower);
+//            setPower(((-4.0 * MotorPower) / Math.pow(TotalTicks, 2.0)) * Math.pow(TotalTicks / 2.0 - getCurrentPosition(), 2.0) + MotorPower);
         } else {
             arm.setPower(0);
             move(getTargetPosition());

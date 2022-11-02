@@ -47,7 +47,10 @@ public class Camera implements Component {
     public void start() {}
 
     @Override
-    public void update() {}
+    public void update() {
+        telemetry.addData("Rotation", getPosition());
+        telemetry.update();
+    }
 
     public enum ParkingPosition {
         DEFAULT,
