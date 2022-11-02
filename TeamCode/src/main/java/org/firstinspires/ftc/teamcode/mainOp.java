@@ -2,68 +2,30 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.Base.AutoBase;
+import org.firstinspires.ftc.teamcode.Components.Arm;
+import org.firstinspires.ftc.teamcode.Components.Grabber;
+import org.firstinspires.ftc.teamcode.Components.Mecanum;
 
 @TeleOp
 public class mainOp extends LinearOpMode {
-
-    private DcMotor frontLeft;
-    private DcMotor backLeft;
-    private DcMotor frontRight;
-    private DcMotor backRight;
-    private DcMotor arm;
-    private Servo grabber;
-
-    private final double GRABBER_OPEN = 0;
-    private final double GRABBER_CLOSED = 1;
-    private final double PULSES_PER_REVOLUTION = 384.5; // gobilda 5202 435 rpm
-    private final int ARM_LOWER_BOUND = - (int) (0.266 * PULSES_PER_REVOLUTION);
-    private final int ARM_ZERO_POSITION = 0;
-    private final int ARM_LOW_JUNCTION = (int) (3.857 * PULSES_PER_REVOLUTION);
-    private final int ARM_MEDIUM_JUNCTION = (int) (6.385 * PULSES_PER_REVOLUTION);
-    private final int ARM_HIGH_JUNCTION = (int) (8.779 * PULSES_PER_REVOLUTION);
-    private final int ARM_UPPER_BOUND = (int) (8.779 * PULSES_PER_REVOLUTION);
-
-    private double MotorPower;
-    private double TotalTicks;
+    private final Mecanum mecanum = new Mecanum(
+        "frontLeft",
+        "frontRight",
+        "backLeft",
+        "backRight",
+        hardwareMap,
+        telemetry
+    );
+    private final Arm arm = new Arm("arm", hardwareMap, telemetry);
+    private final Grabber grabber = new Grabber("grabber", hardwareMap, telemetry);
 
     @Override
     public void runOpMode() throws InterruptedException {
-        float x;
-        float y;
-        float clockwise;
-        double fl;
-        double fr;
-        double bl;
-        double br;
-        int speed = 1;
-        boolean slowmodeChanged = false;
-        boolean shouldSlowmode = false;
-        boolean isGrabbing = false;
-        boolean changed = false;
-
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
-        arm = hardwareMap.get(DcMotor.class, "arm");
-        grabber = hardwareMap.get(Servo.class, "grabber");
-
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        arm.setDirection(DcMotor.Direction.REVERSE);
-
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        grabber.setPosition(GRABBER_OPEN);
-        moveArm(ARM_ZERO_POSITION);
-
-        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        mecanum.init();
+        arm.init();
+        grabber.init();
 
         AutoBase auto = new AutoBase(
                 this,
@@ -88,144 +50,84 @@ public class mainOp extends LinearOpMode {
 
         waitForStart();
         if (opModeIsActive()) {
-            frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            mecanum.start();
+            arm.start();
+            grabber.start();
 
             while (opModeIsActive()) {
-                x = gamepad1.left_stick_x;
-                y = -gamepad1.left_stick_y;
-                clockwise = gamepad1.right_stick_x;
-
+                // drivetrain
                 if (gamepad1.dpad_up) {
-                    y = (float) 1.0;
+                    mecanum.driveForward();
                 } else if (gamepad1.dpad_down) {
-                    y = (float) -1.0;
+                    mecanum.driveBackward();
                 }
 
                 if (gamepad1.dpad_right) {
-                    x = (float) 1.0;
+                    mecanum.strafeRight();
                 } else if (gamepad1.dpad_left) {
-                    x = (float) -1.0;
+                    mecanum.strafeLeft();
                 }
 
                 if (gamepad1.back) {
-                    clockwise = (float) -1.0;
+                    mecanum.turnLeft();
                 } else if (gamepad1.guide) {
-                    clockwise = (float) 1.0;
+                    mecanum.turnRight();
                 }
 
-                fl = y + x + clockwise;
-                fr = y - x - clockwise;
-                bl = y - x + clockwise;
-                br = y + x - clockwise;
+                mecanum.setInitialDirections(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
                 if (gamepad1.right_bumper) {
-                    speed = 2;
+                    mecanum.setHalfSpeed();
                 } else if (gamepad1.left_bumper) {
-                    speed = 4;
+                    mecanum.setQuarterSpeed();
                 } else if (gamepad1.start) {
-                    if (!slowmodeChanged) {
-                        shouldSlowmode = !shouldSlowmode;
-                        slowmodeChanged = true;
-                    }
+                    mecanum.buttonPressed();
                 } else {
-                    if (slowmodeChanged) {
-                        slowmodeChanged = false;
-                    } else {
-                        speed = 1;
-                    }
+                   mecanum.buttonReleased();
                 }
-                if (shouldSlowmode) {
-                    speed = 2;
-                }
+
+                mecanum.update();
 
                 if (gamepad1.left_stick_button) {
-                    if (gamepad1.y) {
-                        auto.turnLeft(45);
-                    } else if (gamepad1.b) {
-                        auto.turnLeft(120);
-                    } else if (gamepad1.a) {
-                        auto.turnLeft(180);
-                    } else {
-                        auto.turnLeft(90);
-                    }
+                    auto.turnLeft();
                 } else if (gamepad1.right_stick_button) {
-                    if (gamepad1.y) {
-                        auto.turnRight(45);
-                    } else if (gamepad1.b) {
-                        auto.turnRight(120);
-                    } else if (gamepad1.a) {
-                        auto.turnRight(180);
-                    } else {
-                        auto.turnRight(90);
-                    }
+                    auto.turnRight();
                 }
 
-                fl /= speed;
-                fr /= speed;
-                bl /= speed;
-                br /= speed;
-
-                frontLeft.setPower(fl);
-                frontRight.setPower(fr);
-                backLeft.setPower(bl);
-                backRight.setPower(br);
-
+                // arm
                 if (gamepad2.left_bumper) {
-                    moveArm(ARM_ZERO_POSITION);
+                    arm.move(arm.ZERO_POSITION);
                 } else if (gamepad2.a) {
-                    moveArm(ARM_LOW_JUNCTION);
+                    arm.move(arm.LOW_JUNCTION);
                 } else if (gamepad2.b) {
-                    moveArm(ARM_MEDIUM_JUNCTION);
+                    arm.move(arm.MEDIUM_JUNCTION);
                 } else if (gamepad2.y) {
-                    moveArm(ARM_HIGH_JUNCTION);
+                    arm.move(arm.HIGH_JUNCTION);
                 } else if (gamepad2.right_bumper) {
-                    moveArm(ARM_UPPER_BOUND);
+                    arm.move(arm.UPPER_BOUND);
                 } else if (gamepad2.right_trigger > 0 || gamepad2.left_trigger > 0) {
-                    if (arm.getCurrentPosition() < ARM_LOWER_BOUND) {
-                        moveArm(ARM_LOWER_BOUND + 10);
-                    } else if (arm.getCurrentPosition() > ARM_UPPER_BOUND) {
-                        moveArm(ARM_UPPER_BOUND - 10);
+                    if (arm.getCurrentPosition() < arm.LOWER_BOUND) {
+                        arm.move(arm.LOWER_BOUND + 10);
+                    } else if (arm.getCurrentPosition() > arm.UPPER_BOUND) {
+                        arm.move(arm.UPPER_BOUND - 10);
                     } else {
-                        moveArm((int) ((gamepad2.right_trigger - gamepad2.left_trigger) * 100) + arm.getCurrentPosition(), gamepad2.right_trigger - gamepad2.left_trigger);
+                        arm.move((int) ((gamepad2.right_trigger - gamepad2.left_trigger) * 100) + arm.getCurrentPosition(), gamepad2.right_trigger - gamepad2.left_trigger);
                     }
                 }
-                telemetry.addData("Position", arm.getCurrentPosition());
-                if (arm.isBusy()) {
-//                    arm.setPower(MotorPower);
-                    arm.setPower(TotalTicks / 0.75 > arm.getCurrentPosition() ? MotorPower : MotorPower / 4.0);
-                } else {
-                    arm.setPower(0);
-                    moveArm(arm.getTargetPosition());
-                }
+//                new Action(arm::update, true);
+                arm.update();
 
+                // grabber
                 if (gamepad2.x) {
-                    if (!changed) {
-                        isGrabbing = !isGrabbing;
-                        changed = true;
-                    }
+                    grabber.buttonPressed();
                 } else {
-                    changed = false;
+                    grabber.buttonReleased();
                 }
-                grabber.setPosition(isGrabbing ? GRABBER_CLOSED : GRABBER_OPEN);
+//                new Action(grabber::update, true);
+                grabber.update();
 
                 telemetry.update();
             }
         }
-    }
-
-    private void moveArm(int position) {
-        moveArm(position, 1);
-    }
-
-    private void moveArm(int position, double motorPower) {
-        arm.setTargetPosition(position);
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        arm.setPower(motorPower);
-        MotorPower = motorPower;
-        TotalTicks = position;
     }
 }
