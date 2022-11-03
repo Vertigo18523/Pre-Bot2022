@@ -6,19 +6,19 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Base.Component;
 
 public class AutoMecanum implements Component {
-    public Mecanum mecanum;
-    private final LinearOpMode opMode;
-
     private static final double PULSES_PER_REVOLUTION = 384.5; // 435 rpm goBilda 5202
     private static final double WHEEL_DIAMETER_IN = 3.77953; // 96 mm
     private static final double PULSES_PER_IN = PULSES_PER_REVOLUTION / (WHEEL_DIAMETER_IN * Math.PI);
     private static double DRIVE_SPEED, TURN_SPEED, STRAFE_MULTIPLIER, DELAY_BETWEEN_METHODS, TURN_CONSTANT;
     private static boolean USE_PID;
+    private final LinearOpMode opMode;
     private final double kP, kI, kD;
+    public Mecanum mecanum;
 
     public AutoMecanum(
             LinearOpMode opMode,
@@ -83,7 +83,8 @@ public class AutoMecanum implements Component {
                 prevError = proportional;
                 timer.reset();
             } else {
-                setMotors(motorPower); opMode.idle();
+                setMotors(motorPower);
+                opMode.idle();
 //                setMotors(totalTicks / 2.0 > mecanum.frontLeft.getCurrentPosition() ? 1 : 0.5);
 //                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + motorPower);
                 mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
@@ -108,10 +109,6 @@ public class AutoMecanum implements Component {
     @Override
     public void update() {
         mecanum.update();
-    }
-
-    private interface goFunction {
-        void run(int distanceTicks);
     }
 
     private void setRunToPosition() {
@@ -305,5 +302,9 @@ public class AutoMecanum implements Component {
 
     public void turnRight(int degrees, double motorPower) throws InterruptedException {
         drive(this::goTurnRight, (int) (TURN_CONSTANT * degrees), motorPower);
+    }
+
+    private interface goFunction {
+        void run(int distanceTicks);
     }
 }

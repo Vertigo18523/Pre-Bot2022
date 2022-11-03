@@ -26,7 +26,7 @@ public class Arm implements Component {
     public Arm(String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
         arm = hardwareMap.get(DcMotor.class, deviceName);
         this.PULSES_PER_REVOLUTION = 384.5; // gobilda 5202 435 rpm
-        this.LOWER_BOUND = - (int) (0.266 * PULSES_PER_REVOLUTION);
+        this.LOWER_BOUND = -(int) (0.266 * PULSES_PER_REVOLUTION);
         this.ZERO_POSITION = 0;
         this.LOW_JUNCTION = (int) (3.857 * PULSES_PER_REVOLUTION);
         this.MEDIUM_JUNCTION = (int) (6.385 * PULSES_PER_REVOLUTION);
@@ -45,7 +45,8 @@ public class Arm implements Component {
     }
 
     @Override
-    public void start() {}
+    public void start() {
+    }
 
     @Override
     public void update() {

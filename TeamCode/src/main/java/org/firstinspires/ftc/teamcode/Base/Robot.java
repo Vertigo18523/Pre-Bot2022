@@ -12,7 +12,7 @@ import java.util.List;
 public abstract class Robot {
     protected List<Component> components = new ArrayList<>();
 
-    public void addComponents(Component... components){
+    public void addComponents(Component... components) {
         this.components.addAll(Arrays.asList(components));
     }
 

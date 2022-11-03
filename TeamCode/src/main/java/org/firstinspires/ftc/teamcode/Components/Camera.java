@@ -18,9 +18,40 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 public class Camera implements Component {
+    private static final int
+            X = 145,
+            Y = 168,
+            W = 30,
+            H = 50;
+    private static final Scalar
+            lower_yellow_bounds = new Scalar(100, 100, 0, 255),
+            upper_yellow_bounds = new Scalar(255, 255, 200, 255),
+            lower_cyan_bounds = new Scalar(0, 100, 100, 255),
+            upper_cyan_bounds = new Scalar(200, 255, 255, 255),
+            lower_magenta_bounds = new Scalar(100, 0, 100, 255),
+            upper_magenta_bounds = new Scalar(255, 200, 255, 255);
     private final OpenCvCamera camera;
-
     private final Telemetry telemetry;
+    private final Scalar
+            YELLOW = new Scalar(255, 255, 0),
+            CYAN = new Scalar(0, 255, 255),
+            MAGENTA = new Scalar(255, 0, 255),
+            WHITE = new Scalar(255, 255, 255);
+    private final Mat
+            yelMat = new Mat(),
+            cyaMat = new Mat(),
+            magMat = new Mat();
+    private final Point
+            sleeve_pointA = new Point(X, Y),
+            sleeve_pointB = new Point(X + W, Y + H);
+    private double
+            yelPercent,
+            cyaPercent,
+            magPercent;
+    private Mat
+            blurredMat = new Mat(),
+            kernel = new Mat();
+    private volatile ParkingPosition position = ParkingPosition.DEFAULT;
 
     public Camera(String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, deviceName), hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()));
@@ -44,12 +75,17 @@ public class Camera implements Component {
     }
 
     @Override
-    public void start() {}
+    public void start() {
+    }
 
     @Override
     public void update() {
         telemetry.addData("Rotation", getPosition());
         telemetry.update();
+    }
+
+    public ParkingPosition getPosition() {
+        return position;
     }
 
     public enum ParkingPosition {
@@ -58,50 +94,6 @@ public class Camera implements Component {
         CENTER,
         RIGHT
     }
-
-    public ParkingPosition getPosition() {
-        return position;
-    }
-
-    private static final int
-            X = 145,
-            Y = 168,
-            W = 30,
-            H = 50;
-
-    private static final Scalar
-            lower_yellow_bounds  = new Scalar(100, 100, 0, 255),
-            upper_yellow_bounds  = new Scalar(255, 255, 200, 255),
-            lower_cyan_bounds    = new Scalar(0, 100, 100, 255),
-            upper_cyan_bounds    = new Scalar(200, 255, 255, 255),
-            lower_magenta_bounds = new Scalar(100, 0, 100, 255),
-            upper_magenta_bounds = new Scalar(255, 200, 255, 255);
-
-    private final Scalar
-            YELLOW  = new Scalar(255, 255, 0),
-            CYAN    = new Scalar(0, 255, 255),
-            MAGENTA = new Scalar(255, 0, 255),
-            WHITE = new Scalar(255, 255, 255);
-
-    private double
-            yelPercent,
-            cyaPercent,
-            magPercent;
-
-    private final Mat
-            yelMat = new Mat(),
-            cyaMat = new Mat(),
-            magMat = new Mat();
-
-    private Mat
-            blurredMat = new Mat(),
-            kernel = new Mat();
-
-    private final Point
-            sleeve_pointA = new Point(X, Y),
-            sleeve_pointB = new Point(X + W,Y + H);
-
-    private volatile ParkingPosition position = ParkingPosition.DEFAULT;
 
     class SleeveDetection extends OpenCvPipeline {
         public Mat processFrame(Mat input) {

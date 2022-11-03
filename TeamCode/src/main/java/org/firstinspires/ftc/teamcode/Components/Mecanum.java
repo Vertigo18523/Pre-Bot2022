@@ -94,10 +94,10 @@ public class Mecanum implements Component {
     }
 
     public void setInitialDirections(double y, double x, double clockwise) {
-        fl = - y + x + clockwise;
-        fr = - y - x - clockwise;
-        bl = - y - x + clockwise;
-        br = - y + x - clockwise;
+        fl = -y + x + clockwise;
+        fr = -y - x - clockwise;
+        bl = -y - x + clockwise;
+        br = -y + x - clockwise;
     }
 
     public void setFullSpeed() {
