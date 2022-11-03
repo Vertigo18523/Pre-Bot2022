@@ -80,8 +80,6 @@ public class Camera implements Component {
 
     @Override
     public void update() {
-        telemetry.addData("Rotation", getPosition());
-        telemetry.update();
     }
 
     public ParkingPosition getPosition() {
@@ -157,6 +155,8 @@ public class Camera implements Component {
             magMat.release();
             kernel.release();
 
+            telemetry.addData("Rotation", getPosition());
+            telemetry.update();
             return input;
         }
     }

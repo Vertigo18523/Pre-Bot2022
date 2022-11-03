@@ -26,7 +26,7 @@ public class Grabber implements Component {
 
     @Override
     public void init() {
-        grabber.setPosition(OPEN);
+        open();
     }
 
     @Override
@@ -48,5 +48,13 @@ public class Grabber implements Component {
 
     public void buttonReleased() {
         changed = false;
+    }
+
+    public void open() {
+        grabber.setPosition(OPEN);
+    }
+
+    public void close() {
+        grabber.setPosition(CLOSED);
     }
 }
