@@ -23,6 +23,27 @@ public class TestAuto extends BaseOpMode {
 
     @Override
     public void onStart() throws InterruptedException {
+        Runnable r = new MoveArm(robot);
+        new Thread(r).start();
         robot.mecanum.driveForward(24);
+
+//        new Thread(() -> {
+//            telemetry.addData("Position", "Test Test Test Test");
+//        }).start();
+
+    }
+}
+
+class MoveArm implements Runnable{
+    PreBot robot;
+    public MoveArm (PreBot robot){
+        this.robot = robot;
+
+    }
+
+
+    public void run()
+    {
+        robot.arm.move(robot.arm.HIGH_JUNCTION);
     }
 }
