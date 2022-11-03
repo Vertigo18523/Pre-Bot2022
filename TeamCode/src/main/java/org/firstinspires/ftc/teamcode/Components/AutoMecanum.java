@@ -115,7 +115,11 @@ public class AutoMecanum implements Component {
     public void update() {
         if (isTeleOp) {
             mecanum.update();
+            return;
         }
+//        if (mecanum.frontLeft.isBusy()) {
+//
+//        }
     }
 
     private void setRunToPosition() {
