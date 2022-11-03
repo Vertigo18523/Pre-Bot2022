@@ -49,9 +49,9 @@ public class MainOp extends BaseOpMode {
         }
 
         if (gamepad1.left_stick_button) {
-            robot.mecanum.mecanum.turnLeft();
+            robot.mecanum.turnLeft();
         } else if (gamepad1.right_stick_button) {
-            robot.mecanum.mecanum.turnRight();
+            robot.mecanum.turnRight();
         }
 
         if (gamepad2.left_bumper) {
