@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Base.Component;
 
 public class AutoMecanum implements Component {
-    public final Mecanum mecanum;
+    public Mecanum mecanum;
     private final LinearOpMode opMode;
 
     private static final double PULSES_PER_REVOLUTION = 384.5; // 435 rpm goBilda 5202
@@ -46,7 +46,7 @@ public class AutoMecanum implements Component {
         USE_PID = usePID;
         TURN_CONSTANT = (Math.PI * Math.sqrt((Math.pow(lengthInches / 2.0, 2.0) + Math.pow(widthInches / 2.0, 2.0)) / 2.0)) / 90.0;
 
-        mecanum = new Mecanum(
+        this.mecanum = new Mecanum(
                 leftFrontName,
                 leftBackName,
                 rightFrontName,
