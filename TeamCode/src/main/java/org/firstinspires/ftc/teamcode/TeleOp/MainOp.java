@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.Base.Robot;
 import org.firstinspires.ftc.teamcode.Bots.PreBot;
 
 @TeleOp
-public class mainOp extends BaseOpMode {
+public class MainOp extends BaseOpMode {
     public PreBot robot;
 
     @Override
