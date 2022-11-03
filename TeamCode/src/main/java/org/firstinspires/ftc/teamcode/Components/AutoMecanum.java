@@ -18,6 +18,7 @@ public class AutoMecanum implements Component {
     private static boolean USE_PID;
     private final LinearOpMode opMode;
     private final double kP, kI, kD;
+    private final boolean isTeleOp;
     public Mecanum mecanum;
 
     public AutoMecanum(
@@ -28,6 +29,7 @@ public class AutoMecanum implements Component {
             String rightBackName,
             @NonNull HardwareMap hardwareMap,
             Telemetry telemetry,
+            boolean isTeleOp,
             double driveSpeed, // 1.0 power
             double turnSpeed, // 0.5 power
             double lengthInches, // front-back axle to axle
@@ -55,6 +57,7 @@ public class AutoMecanum implements Component {
                 telemetry
         );
 
+        this.isTeleOp = isTeleOp;
         this.opMode = opMode;
         this.kP = kP;
         this.kI = kI;
@@ -98,7 +101,9 @@ public class AutoMecanum implements Component {
 
     @Override
     public void init() {
-        mecanum.init();
+        if (isTeleOp) {
+            mecanum.init();
+        }
     }
 
     @Override
@@ -108,7 +113,9 @@ public class AutoMecanum implements Component {
 
     @Override
     public void update() {
-        mecanum.update();
+        if (isTeleOp) {
+            mecanum.update();
+        }
     }
 
     private void setRunToPosition() {

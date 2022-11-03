@@ -17,7 +17,7 @@ public class PreBot extends Robot {
     public Camera camera;
 
     @Override
-    protected void initBot(HardwareMap hardwareMap, Telemetry telemetry, LinearOpMode opMode) {
+    protected void initBot(HardwareMap hardwareMap, Telemetry telemetry, LinearOpMode opMode, boolean isTeleOp) {
 
         this.mecanum = new AutoMecanum(
                 opMode,
@@ -27,6 +27,7 @@ public class PreBot extends Robot {
                 "backRight",
                 hardwareMap,
                 telemetry,
+                isTeleOp,
                 0.1,
                 0.5,
                 10.5,

@@ -4,10 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 public abstract class BaseOpMode extends LinearOpMode {
     private Robot robot;
+    private boolean isTeleOp;
 
     public void runOpMode() throws InterruptedException {
         robot = setRobot();
-        robot.initBot(hardwareMap, telemetry, this);
+        isTeleOp = setTeleOp();
+
+        robot.initBot(hardwareMap, telemetry, this, isTeleOp);
 
         robot.components.forEach(Component::init);
         onInit();
@@ -32,4 +35,5 @@ public abstract class BaseOpMode extends LinearOpMode {
     }
 
     protected abstract Robot setRobot();
+    protected abstract boolean setTeleOp();
 }

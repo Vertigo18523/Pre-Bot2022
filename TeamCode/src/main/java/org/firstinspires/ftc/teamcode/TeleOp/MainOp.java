@@ -17,6 +17,11 @@ public class MainOp extends BaseOpMode {
     }
 
     @Override
+    protected boolean setTeleOp() {
+        return true;
+    }
+
+    @Override
     public void onUpdate() throws InterruptedException {
         robot.mecanum.mecanum.setInitialDirections(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 

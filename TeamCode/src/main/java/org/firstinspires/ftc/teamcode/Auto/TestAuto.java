@@ -17,6 +17,11 @@ public class TestAuto extends BaseOpMode {
     }
 
     @Override
+    protected boolean setTeleOp() {
+        return false;
+    }
+
+    @Override
     public void onStart() throws InterruptedException {
         robot.mecanum.driveForward(24);
     }

@@ -20,6 +20,11 @@ public class DeliverAndParkLeft extends BaseOpMode {
     }
 
     @Override
+    protected boolean setTeleOp() {
+        return false;
+    }
+
+    @Override
     public void onInit() throws InterruptedException {
         robot.grabber.close();
     }
