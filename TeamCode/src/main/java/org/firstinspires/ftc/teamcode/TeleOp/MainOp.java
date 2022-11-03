@@ -18,6 +18,8 @@ public class MainOp extends BaseOpMode {
 
     @Override
     public void onUpdate() throws InterruptedException {
+        robot.mecanum.mecanum.setInitialDirections(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+
         if (gamepad1.dpad_up) {
             robot.mecanum.mecanum.driveForward();
         } else if (gamepad1.dpad_down) {
@@ -36,7 +38,7 @@ public class MainOp extends BaseOpMode {
             robot.mecanum.mecanum.turnRight();
         }
 
-        robot.mecanum.mecanum.setInitialDirections(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        robot.mecanum.mecanum.setNewDirections();
 
         if (gamepad1.right_bumper) {
             robot.mecanum.mecanum.setHalfSpeed();

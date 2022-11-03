@@ -13,12 +13,12 @@ public abstract class BaseOpMode extends LinearOpMode {
         onInit();
 
         waitForStart();
-        robot.components.forEach(Component::start);
         onStart();
+        robot.components.forEach(Component::start);
 
         while (opModeIsActive()) {
-            robot.components.forEach(Component::update);
             onUpdate();
+            robot.components.forEach(Component::update);
         }
     }
 

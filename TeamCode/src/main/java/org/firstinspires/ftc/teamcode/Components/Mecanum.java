@@ -62,38 +62,44 @@ public class Mecanum implements Component {
                 setHalfSpeed();
             }
         }
-        telemetry.addData("Speed", "1 / " + speed);
+        telemetry.addData("Speed", "1/" + speed);
         frontLeft.setPower(fl / speed);
         frontRight.setPower(fr / speed);
         backLeft.setPower(bl / speed);
         backRight.setPower(br / speed);
     }
 
+    public void setInitialDirections(float y, float x, float clockwise) {
+        this.y = y;
+        this.x = x;
+        this.clockwise = clockwise;
+    }
+
     public void driveForward() {
-        y = (float) 1.0;
+        this.y = (float) 1.0;
     }
 
     public void driveBackward() {
-        y = (float) -1.0;
+        this.y = (float) -1.0;
     }
 
     public void strafeRight() {
-        x = (float) 1.0;
+        this.x = (float) 1.0;
     }
 
     public void strafeLeft() {
-        x = (float) -1.0;
+        this.x = (float) -1.0;
     }
 
     public void turnRight() {
-        clockwise = (float) 1.0;
+        this.clockwise = (float) 1.0;
     }
 
     public void turnLeft() {
-        clockwise = (float) -1.0;
+        this.clockwise = (float) -1.0;
     }
 
-    public void setInitialDirections(double y, double x, double clockwise) {
+    public void setNewDirections() {
         fl = -y + x + clockwise;
         fr = -y - x - clockwise;
         bl = -y - x + clockwise;
