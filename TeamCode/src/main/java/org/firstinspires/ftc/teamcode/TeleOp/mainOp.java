@@ -36,16 +36,16 @@ public class mainOp extends BaseOpMode {
             robot.mecanum.mecanum.turnRight();
         }
 
-        robot.mecanum.setInitialDirections(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        robot.mecanum.mecanum.setInitialDirections(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
         if (gamepad1.right_bumper) {
-            robot.mecanum.setHalfSpeed();
+            robot.mecanum.mecanum.setHalfSpeed();
         } else if (gamepad1.left_bumper) {
-            robot.mecanum.setQuarterSpeed();
+            robot.mecanum.mecanum.setQuarterSpeed();
         } else if (gamepad1.start) {
-            robot.mecanum.buttonPressed();
+            robot.mecanum.mecanum.buttonPressed();
         } else {
-            robot.mecanum.buttonReleased();
+            robot.mecanum.mecanum.buttonReleased();
         }
 
         if (gamepad1.left_stick_button) {

@@ -306,28 +306,4 @@ public class AutoMecanum implements Component {
     public void turnRight(int degrees, double motorPower) throws InterruptedException {
         drive(this::goTurnRight, (int) (TURN_CONSTANT * degrees), motorPower);
     }
-
-    public void setInitialDirections(double y, double x, double clockwise) {
-        mecanum.setInitialDirections(y, x, clockwise);
-    }
-
-    public void setFullSpeed() {
-        mecanum.setFullSpeed();
-    }
-
-    public void setHalfSpeed() {
-        mecanum.setHalfSpeed();
-    }
-
-    public void setQuarterSpeed() {
-        mecanum.setQuarterSpeed();
-    }
-
-    public void buttonPressed() {
-        mecanum.buttonPressed();
-    }
-
-    public void buttonReleased() {
-        mecanum.buttonReleased();
-    }
 }
