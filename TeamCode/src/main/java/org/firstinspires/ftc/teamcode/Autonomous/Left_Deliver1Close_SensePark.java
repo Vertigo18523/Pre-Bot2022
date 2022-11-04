@@ -32,14 +32,22 @@ public class Left_Deliver1Close_SensePark extends BaseOpMode {
     @Override
     public void onStart() throws InterruptedException {
         parkingPosition = robot.camera.getPosition();
+
+        // move to junction pole
         robot.arm.move(robot.arm.HIGH_JUNCTION);
         robot.mecanum.driveForward(8);
         robot.mecanum.strafeRight(36);
+
+        // deliver preload cone
         robot.mecanum.driveForward(32);
         robot.grabber.open();
         robot.mecanum.driveBackward(20);
+
+        // line up for parking
         robot.mecanum.turnLeft();
         robot.arm.move(robot.arm.ZERO_POSITION);
+
+        // park
         if (parkingPosition == Camera.ParkingPosition.LEFT) {
             robot.mecanum.driveForward(60);
         } else if (parkingPosition == Camera.ParkingPosition.CENTER) {
