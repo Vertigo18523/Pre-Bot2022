@@ -39,7 +39,7 @@ public class Left_DeliverPark extends BaseOpMode {
         robot.grabber.open();
         robot.mecanum.driveBackward(20);
         robot.mecanum.turnLeft();
-        robot.arm.move(robot.arm.LOWER_BOUND);
+        robot.arm.move(robot.arm.ZERO_POSITION);
         if (parkingPosition == Camera.ParkingPosition.LEFT) {
             robot.mecanum.driveForward(60);
         } else if (parkingPosition == Camera.ParkingPosition.CENTER) {
