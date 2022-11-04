@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Bots.PreBot;
 import org.firstinspires.ftc.teamcode.Components.Camera;
 
 @Autonomous
-public class Left_DeliverPark extends BaseOpMode {
+public class Left_DeliverClose_SensePark extends BaseOpMode {
     public PreBot robot;
 
     Camera.ParkingPosition parkingPosition;
