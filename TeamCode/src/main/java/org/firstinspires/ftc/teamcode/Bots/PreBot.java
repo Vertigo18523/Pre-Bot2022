@@ -41,7 +41,7 @@ public class PreBot extends Robot {
         );
         this.arm = new Arm("arm", hardwareMap, telemetry);
         this.grabber = new Grabber("grabber", hardwareMap, telemetry);
-        this.camera = new Camera("Webcam 1", hardwareMap, telemetry);
+        this.camera = new Camera(opMode,"Webcam 1", hardwareMap, telemetry);
 
         addComponents(mecanum, arm, grabber, camera);
     }
