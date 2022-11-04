@@ -22,7 +22,13 @@ public class TestAuto extends BaseOpMode {
     }
 
     @Override
+    public void onInit() throws InterruptedException {
+        robot.camera.requestStart();
+    }
+
+    @Override
     public void onStart() throws InterruptedException {
+        robot.camera.helper();
         robot.mecanum.driveForward(24);
     }
 }

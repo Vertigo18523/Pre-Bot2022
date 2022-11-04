@@ -26,12 +26,13 @@ public class Left_Deliver1Close_SensePark extends BaseOpMode {
 
     @Override
     public void onInit() throws InterruptedException {
+        robot.camera.requestStart();
         robot.grabber.close();
     }
 
     @Override
     public void onStart() throws InterruptedException {
-        parkingPosition = robot.camera.getPosition();
+        parkingPosition = robot.camera.helper();
 
         // move to junction pole
         robot.arm.move(robot.arm.HIGH_JUNCTION);

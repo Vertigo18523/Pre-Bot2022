@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -51,27 +52,18 @@ public class Camera implements Component {
     private Mat
             blurredMat = new Mat(),
             kernel = new Mat();
+    private boolean isRunning = false;
     private volatile ParkingPosition position = ParkingPosition.DEFAULT;
+    private LinearOpMode opMode;
 
-    public Camera(String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
+    public Camera(LinearOpMode opMode, String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, deviceName), hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()));
         this.telemetry = telemetry;
+        this.opMode = opMode;
     }
 
     @Override
     public void init() {
-        camera.setPipeline(new SleeveDetection());
-
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                camera.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_RIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-            }
-        });
     }
 
     @Override
@@ -84,6 +76,41 @@ public class Camera implements Component {
 
     public ParkingPosition getPosition() {
         return position;
+    }
+
+    public boolean getIsRunning() {
+        return isRunning;
+    }
+
+    public void requestStart() {
+        camera.setPipeline(new SleeveDetection());
+
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                camera.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_RIGHT);
+                isRunning = true;
+            }
+
+            @Override
+            public void onError(int errorCode) {
+            }
+        });
+    }
+
+    public void requestStop() {
+        camera.stopStreaming();
+        isRunning = false;
+    }
+
+    public ParkingPosition helper() {
+        while (!getIsRunning()) {
+            opMode.idle();
+        }
+        opMode.sleep(250);
+        ParkingPosition localPosition = getPosition();
+        requestStop();
+        return localPosition;
     }
 
     public enum ParkingPosition {
