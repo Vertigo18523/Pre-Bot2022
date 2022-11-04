@@ -37,7 +37,6 @@ public class Arm implements Component {
 
     @Override
     public void init() {
-        arm.setDirection(DcMotor.Direction.REVERSE);
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         move(ZERO_POSITION);
