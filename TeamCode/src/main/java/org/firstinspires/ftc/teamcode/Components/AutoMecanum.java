@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Base.Component;
@@ -66,8 +67,8 @@ public class AutoMecanum implements Component {
 
     private void drive(@NonNull goFunction direction, double distanceIN, double motorPower) throws InterruptedException {
         // PID stuff
-//        ElapsedTime timer = new ElapsedTime();
-//        double proportional, integral = 0, derivative, pid, prevError = 0;
+        ElapsedTime timer = new ElapsedTime();
+        double proportional, integral = 0, derivative, pid, prevError = 0;
         double totalTicks = PULSES_PER_IN * distanceIN;
         resetEncoders();
         direction.run((int) totalTicks);
@@ -78,29 +79,29 @@ public class AutoMecanum implements Component {
         }
         updateMotorPower = motorPower;
         updateTotalTicks = totalTicks;
-//        while (
-//                mecanum.frontLeft.isBusy()
-//        ) {
-//            if (USE_PID) {
-//                proportional = totalTicks - mecanum.frontLeft.getCurrentPosition();
-//                integral += proportional * timer.seconds();
-//                derivative = (proportional - prevError) / timer.seconds();
-//                pid = (kP * proportional) + (kI * integral) + (kD * derivative);
-//                setMotors(Math.min(pid, motorPower));
-//                prevError = proportional;
-//                timer.reset();
-//            } else {
-//                setMotors(motorPower);
-//                opMode.idle(); // shouldn't need this line?
-////                setMotors(totalTicks / 2.0 > mecanum.frontLeft.getCurrentPosition() ? 1 : 0.5);
-////                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + motorPower);
-//                mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
-//                mecanum.telemetry.update();
-//            }
-//        }
-//        stopDriving();
-//        setRunWithoutEncoders();
-//        opMode.sleep((long) DELAY_BETWEEN_METHODS);
+        while (
+                mecanum.frontLeft.isBusy()
+        ) {
+            if (USE_PID) {
+                proportional = totalTicks - mecanum.frontLeft.getCurrentPosition();
+                integral += proportional * timer.seconds();
+                derivative = (proportional - prevError) / timer.seconds();
+                pid = (kP * proportional) + (kI * integral) + (kD * derivative);
+                setMotors(Math.min(pid, motorPower));
+                prevError = proportional;
+                timer.reset();
+            } else {
+                setMotors(motorPower);
+                opMode.idle(); // shouldn't need this line?
+//                setMotors(totalTicks / 2.0 > mecanum.frontLeft.getCurrentPosition() ? 1 : 0.5);
+//                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + motorPower);
+                mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
+                mecanum.telemetry.update();
+            }
+        }
+        stopDriving();
+        setRunWithoutEncoders();
+        opMode.sleep((long) DELAY_BETWEEN_METHODS);
     }
 
     @Override
@@ -121,29 +122,29 @@ public class AutoMecanum implements Component {
             mecanum.update();
             return;
         }
-        if (mecanum.frontLeft.isBusy()) {
-            if (USE_PID) {
-                throw new UnsupportedOperationException("PID not implemented");
-//                proportional = totalTicks - mecanum.frontLeft.getCurrentPosition();
-//                integral += proportional * timer.seconds();
-//                derivative = (proportional - prevError) / timer.seconds();
-//                pid = (kP * proportional) + (kI * integral) + (kD * derivative);
-//                setMotors(Math.min(pid, motorPower));
-//                prevError = proportional;
-//                timer.reset();
-            } else {
-                setMotors(updateMotorPower);
-//                opMode.idle(); // shouldn't need this line?
-//                setMotors(updateTotalTicks / 2.0 > mecanum.frontLeft.getCurrentPosition() ? 1 : 0.5);
-//                setMotors(((-4.0 * updateMotorPower) / Math.pow(updateTotalTicks, 2.0)) * Math.pow(updateTotalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + updateMotorPower);
-                mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
-                mecanum.telemetry.update();
-            }
-        } else {
-            stopDriving();
-            setRunWithoutEncoders();
-            opMode.sleep((long) DELAY_BETWEEN_METHODS);
-        }
+//        if (mecanum.frontLeft.isBusy()) {
+//            if (USE_PID) {
+//                throw new UnsupportedOperationException("PID not implemented");
+////                proportional = totalTicks - mecanum.frontLeft.getCurrentPosition();
+////                integral += proportional * timer.seconds();
+////                derivative = (proportional - prevError) / timer.seconds();
+////                pid = (kP * proportional) + (kI * integral) + (kD * derivative);
+////                setMotors(Math.min(pid, motorPower));
+////                prevError = proportional;
+////                timer.reset();
+//            } else {
+//                setMotors(updateMotorPower);
+////                opMode.idle(); // shouldn't need this line?
+////                setMotors(updateTotalTicks / 2.0 > mecanum.frontLeft.getCurrentPosition() ? 1 : 0.5);
+////                setMotors(((-4.0 * updateMotorPower) / Math.pow(updateTotalTicks, 2.0)) * Math.pow(updateTotalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + updateMotorPower);
+//                mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
+//                mecanum.telemetry.update();
+//            }
+//        } else {
+//            stopDriving();
+//            setRunWithoutEncoders();
+//            opMode.sleep((long) DELAY_BETWEEN_METHODS);
+//        }
     }
 
     private void setRunToPosition() {
