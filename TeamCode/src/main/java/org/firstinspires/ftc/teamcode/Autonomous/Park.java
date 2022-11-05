@@ -33,8 +33,9 @@ public class Park extends BaseOpMode {
     @Override
     public void onStart() throws InterruptedException {
         parkingPosition = robot.camera.helper();
+        robot.mecanum.strafeLeft(4);
 
-        robot.mecanum.driveForward(32);
+        robot.mecanum.driveForward(28);
         if (parkingPosition == Camera.ParkingPosition.LEFT) {
             robot.mecanum.strafeLeft(24);
         } else if (parkingPosition == Camera.ParkingPosition.RIGHT) {
