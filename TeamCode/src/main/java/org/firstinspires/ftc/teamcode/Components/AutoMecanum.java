@@ -66,7 +66,6 @@ public class AutoMecanum implements Component {
     }
 
     private void drive(@NonNull goFunction direction, double distanceIN, double motorPower) throws InterruptedException {
-        // PID stuff
         ElapsedTime timer = new ElapsedTime();
         double proportional, integral = 0, derivative, pid, prevError = 0;
         double totalTicks = PULSES_PER_IN * distanceIN;
@@ -79,26 +78,26 @@ public class AutoMecanum implements Component {
         }
         updateMotorPower = motorPower;
         updateTotalTicks = totalTicks;
-//        while (
-//                mecanum.frontLeft.getCurrentPosition() != mecanum.frontLeft.getTargetPosition()
-//        ) {
-//            if (USE_PID) {
-//                proportional = totalTicks - mecanum.frontLeft.getCurrentPosition();
-//                integral += proportional * timer.seconds();
-//                derivative = (proportional - prevError) / timer.seconds();
-//                pid = (kP * proportional) + (kI * integral) + (kD * derivative);
-//                setMotors(Math.min(pid, motorPower));
-//                prevError = proportional;
-//                timer.reset();
-//            } else {
-//                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + motorPower);
-//                mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
-//                mecanum.telemetry.update();
-//            }
-//        }
-//        stopDriving();
-//        setRunWithoutEncoders();
-//        opMode.sleep((long) DELAY_BETWEEN_METHODS);
+        while (
+                mecanum.frontLeft.getCurrentPosition() != mecanum.frontLeft.getTargetPosition()
+        ) {
+            if (USE_PID) {
+                proportional = totalTicks - mecanum.frontLeft.getCurrentPosition();
+                integral += proportional * timer.seconds();
+                derivative = (proportional - prevError) / timer.seconds();
+                pid = (kP * proportional) + (kI * integral) + (kD * derivative);
+                setMotors(Math.min(pid, motorPower));
+                prevError = proportional;
+                timer.reset();
+            } else {
+                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + motorPower);
+                mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
+                mecanum.telemetry.update();
+            }
+        }
+        stopDriving();
+        setRunWithoutEncoders();
+        opMode.sleep((long) DELAY_BETWEEN_METHODS);
     }
 
     @Override
@@ -119,15 +118,15 @@ public class AutoMecanum implements Component {
             mecanum.update();
             return;
         }
-        if (mecanum.frontLeft.getCurrentPosition() != mecanum.frontLeft.getTargetPosition()) {
-            setMotors(((-4.0 * updateMotorPower) / Math.pow(updateTotalTicks, 2.0)) * Math.pow(updateTotalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + updateMotorPower);
-            mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
-            mecanum.telemetry.update();
-        } else {
-            stopDriving();
-            setRunWithoutEncoders();
-            opMode.sleep((long) DELAY_BETWEEN_METHODS);
-        }
+//        if (mecanum.frontLeft.getCurrentPosition() != mecanum.frontLeft.getTargetPosition()) {
+//            setMotors(((-4.0 * updateMotorPower) / Math.pow(updateTotalTicks, 2.0)) * Math.pow(updateTotalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + updateMotorPower);
+//            mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
+//            mecanum.telemetry.update();
+//        } else {
+//            stopDriving();
+//            setRunWithoutEncoders();
+//            opMode.sleep((long) DELAY_BETWEEN_METHODS);
+//        }
     }
 
     private void setRunToPosition() {

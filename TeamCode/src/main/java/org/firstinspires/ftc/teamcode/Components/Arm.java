@@ -49,15 +49,14 @@ public class Arm implements Component {
     @Override
     public void update() {
         telemetry.addData("Position", getCurrentPosition());
-        if (isBusy()) {
-            arm.setTargetPosition(TotalTicks);
-            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            setPower(MotorPower);
-//            setPower(((-4.0 * MotorPower) / Math.pow(TotalTicks, 2.0)) * Math.pow(TotalTicks / 2.0 - getCurrentPosition(), 2.0) + MotorPower);
-        } else {
-            setPower(0);
-            move(getTargetPosition());
-        }
+//        if (isBusy()) {
+////            setPower(MotorPower);
+//////            setPower(((-4.0 * MotorPower) / Math.pow(TotalTicks, 2.0)) * Math.pow(TotalTicks / 2.0 - getCurrentPosition(), 2.0) + MotorPower);
+//        } else {
+//            setPower(0);
+//            move(getTargetPosition());
+//        }
+        if (!isBusy()) move(getTargetPosition());
     }
 
     public void move(int position) {
@@ -70,6 +69,10 @@ public class Arm implements Component {
         MotorPower = motorPower;
         TotalTicks = position;
         StartingPosition = getCurrentPosition();
+        while (isBusy()) {
+            setPower(MotorPower);
+        }
+        setPower(0);
     }
 
     public void setPower(double motorPower) {
