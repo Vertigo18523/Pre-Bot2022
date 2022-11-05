@@ -20,7 +20,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class Camera implements Component {
     private static final int
-            X = 145,
+            X = 130,
             Y = 168,
             W = 30,
             H = 50;

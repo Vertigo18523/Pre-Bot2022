@@ -58,7 +58,7 @@ public class Mecanum implements Component {
     @Override
     public void update() {
         if (shouldSlowMode) {
-            if (speed > 2) {
+            if (speed < 2) {
                 setHalfSpeed();
             }
         }
@@ -76,11 +76,11 @@ public class Mecanum implements Component {
     }
 
     public void driveForward() {
-        this.y = (float) 1.0;
+        this.y = (float) -1.0;
     }
 
     public void driveBackward() {
-        this.y = (float) -1.0;
+        this.y = (float) 1.0;
     }
 
     public void strafeRight() {
