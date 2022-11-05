@@ -36,7 +36,7 @@ public class Left_Deliver1Far_SensePark extends BaseOpMode {
 
         // move to junction pole
         robot.arm.move(robot.arm.HIGH_JUNCTION);
-        robot.mecanum.driveForward(8);
+        robot.mecanum.driveForward(6);
         robot.mecanum.strafeRight(24);
         robot.mecanum.driveForward(60);
         robot.mecanum.turnLeft();

@@ -32,7 +32,7 @@ public class PreBot extends Robot {
                 0.5,
                 10.5,
                 12.5,
-                2.0,
+                1.5,
                 100,
                 false,
                 0,

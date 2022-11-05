@@ -36,13 +36,13 @@ public class Left_Deliver1Close_SensePark extends BaseOpMode {
 
         // move to junction pole
         robot.arm.move(robot.arm.HIGH_JUNCTION);
-        robot.mecanum.driveForward(8);
+        robot.mecanum.driveForward(6);
         robot.mecanum.strafeRight(36);
 
         // deliver preload cone
         robot.mecanum.driveForward(32);
         robot.grabber.open();
-        robot.mecanum.driveBackward(20);
+        robot.mecanum.driveBackward(18);
 
         // line up for parking
         robot.mecanum.turnLeft();

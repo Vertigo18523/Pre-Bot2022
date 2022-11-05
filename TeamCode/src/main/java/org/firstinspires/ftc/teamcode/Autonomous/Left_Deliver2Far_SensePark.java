@@ -36,7 +36,7 @@ public class Left_Deliver2Far_SensePark extends BaseOpMode {
 
         // move to junction pole
         robot.arm.move(robot.arm.HIGH_JUNCTION);
-        robot.mecanum.driveForward(8);
+        robot.mecanum.driveForward(6);
         robot.mecanum.strafeRight(24);
         robot.mecanum.driveForward(60);
         robot.mecanum.turnLeft();
@@ -49,11 +49,11 @@ public class Left_Deliver2Far_SensePark extends BaseOpMode {
         // get second cone
         robot.arm.move((int) (robot.arm.LOW_JUNCTION * 0.75)); // stack of five cones
         robot.mecanum.strafeLeft(12);
-        robot.mecanum.driveForward(48 + 8); // added same as first move
+        robot.mecanum.driveForward(54); // added same as first move
         robot.grabber.close();
 
         // deliver second cone
-        robot.mecanum.driveBackward(48 + 8); // reverse previous move
+        robot.mecanum.driveBackward(54); // reverse previous move
         robot.arm.move(robot.arm.HIGH_JUNCTION);
         robot.mecanum.strafeRight(12);
         robot.mecanum.driveForward(12);
