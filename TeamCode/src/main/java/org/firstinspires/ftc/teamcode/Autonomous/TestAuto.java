@@ -31,5 +31,7 @@ public class TestAuto extends BaseOpMode {
         ).start();
         robot.mecanum.driveForward(24);
 
+        robot.arm.move(robot.arm.HIGH_JUNCTION);
+        robot.mecanum.driveBackward(24);
     }
 }
