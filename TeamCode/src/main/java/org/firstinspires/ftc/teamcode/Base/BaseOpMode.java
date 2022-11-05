@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Base;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Utils.Action;
+
 public abstract class BaseOpMode extends LinearOpMode {
     private Robot robot;
     private boolean isTeleOp;
@@ -16,9 +18,27 @@ public abstract class BaseOpMode extends LinearOpMode {
         onInit();
 
         waitForStart();
+//        new Action(() -> {
+//            try {
+//                onStart();
+//                robot.components.forEach(Component::start);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }, true).run();
         onStart();
         robot.components.forEach(Component::start);
 
+//        new Action(() -> {
+//            try {
+//                while (opModeIsActive()) {
+//                    onUpdate();
+//                    robot.components.forEach(Component::update);
+//                }
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }, true).run();
         while (opModeIsActive()) {
             onUpdate();
             robot.components.forEach(Component::update);
@@ -32,6 +52,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     }
 
     public void onUpdate() throws InterruptedException {
+
     }
 
     protected abstract Robot setRobot();

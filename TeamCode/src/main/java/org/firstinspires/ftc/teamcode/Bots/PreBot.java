@@ -28,7 +28,7 @@ public class PreBot extends Robot {
                 hardwareMap,
                 telemetry,
                 isTeleOp,
-                0.1,
+                0.8,
                 0.5,
                 10.5,
                 12.5,

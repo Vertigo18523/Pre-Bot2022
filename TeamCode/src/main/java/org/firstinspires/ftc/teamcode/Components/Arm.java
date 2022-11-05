@@ -20,18 +20,17 @@ public class Arm implements Component {
     public int UPPER_BOUND;
 
     public double MotorPower;
-    public double TotalTicks;
-    public double StartingPosition;
+    public int TotalTicks, StartingPosition;
 
     public Arm(String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
         arm = hardwareMap.get(DcMotor.class, deviceName);
         this.PULSES_PER_REVOLUTION = 384.5; // gobilda 5202 435 rpm
-        this.LOWER_BOUND = -(int) (0.266 * PULSES_PER_REVOLUTION);
+        this.LOWER_BOUND = -(int) (0.260 * PULSES_PER_REVOLUTION);
         this.ZERO_POSITION = 0;
-        this.LOW_JUNCTION = (int) (3.857 * PULSES_PER_REVOLUTION);
-        this.MEDIUM_JUNCTION = (int) (6.385 * PULSES_PER_REVOLUTION);
-        this.HIGH_JUNCTION = (int) (9.100 * PULSES_PER_REVOLUTION);
-        this.UPPER_BOUND = (int) (9.100 * PULSES_PER_REVOLUTION);
+        this.LOW_JUNCTION = (int) (2.861 * PULSES_PER_REVOLUTION);
+        this.MEDIUM_JUNCTION = (int) (4.941 * PULSES_PER_REVOLUTION);
+        this.HIGH_JUNCTION = (int) (7.022 * PULSES_PER_REVOLUTION);
+        this.UPPER_BOUND = (int) (7.282 * PULSES_PER_REVOLUTION);
         this.telemetry = telemetry;
     }
 
@@ -51,15 +50,12 @@ public class Arm implements Component {
     public void update() {
         telemetry.addData("Position", getCurrentPosition());
         if (isBusy()) {
+            arm.setTargetPosition(TotalTicks);
+            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             setPower(MotorPower);
-//            if (Math.max(TotalTicks, StartingPosition) == TotalTicks) {
-//                setPower(TotalTicks / 2.0 > getCurrentPosition() ? 1 : 0.1);
-//            } else {
-//                setPower(TotalTicks / 2.0 < getCurrentPosition() ? 1 : 0.1);
-//            }
 //            setPower(((-4.0 * MotorPower) / Math.pow(TotalTicks, 2.0)) * Math.pow(TotalTicks / 2.0 - getCurrentPosition(), 2.0) + MotorPower);
         } else {
-            arm.setPower(0);
+            setPower(0);
             move(getTargetPosition());
         }
     }
