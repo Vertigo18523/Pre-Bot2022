@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Components.Camera;
 import org.firstinspires.ftc.teamcode.Components.Grabber;
 
 public class PreBot extends Robot {
+    public boolean isTeleOp;
     public AutoMecanum mecanum;
     public Arm arm;
     public Grabber grabber;
@@ -18,7 +19,7 @@ public class PreBot extends Robot {
 
     @Override
     protected void initBot(HardwareMap hardwareMap, Telemetry telemetry, LinearOpMode opMode, boolean isTeleOp) {
-
+        this.isTeleOp = isTeleOp;
         this.mecanum = new AutoMecanum(
                 opMode,
                 "frontLeft",

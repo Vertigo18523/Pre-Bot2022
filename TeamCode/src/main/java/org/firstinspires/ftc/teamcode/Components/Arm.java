@@ -21,8 +21,9 @@ public class Arm implements Component {
 
     public double MotorPower;
     public int TotalTicks, StartingPosition;
+    public boolean isTeleOp;
 
-    public Arm(String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
+    public Arm(String deviceName, HardwareMap hardwareMap, Telemetry telemetry, boolean isTeleOp) {
         arm = hardwareMap.get(DcMotor.class, deviceName);
         this.PULSES_PER_REVOLUTION = 384.5; // gobilda 5202 435 rpm
         this.LOWER_BOUND = -(int) (0.260 * PULSES_PER_REVOLUTION);
@@ -32,6 +33,7 @@ public class Arm implements Component {
         this.HIGH_JUNCTION = (int) (7.022 * PULSES_PER_REVOLUTION);
         this.UPPER_BOUND = (int) (7.282 * PULSES_PER_REVOLUTION);
         this.telemetry = telemetry;
+        this.isTeleOp = isTeleOp;
     }
 
     @Override
@@ -49,14 +51,17 @@ public class Arm implements Component {
     @Override
     public void update() {
         telemetry.addData("Position", getCurrentPosition());
-//        if (isBusy()) {
-////            setPower(MotorPower);
-//////            setPower(((-4.0 * MotorPower) / Math.pow(TotalTicks, 2.0)) * Math.pow(TotalTicks / 2.0 - getCurrentPosition(), 2.0) + MotorPower);
-//        } else {
-//            setPower(0);
-//            move(getTargetPosition());
-//        }
-        if (!isBusy()) move(getTargetPosition());
+        if (isTeleOp) {
+            if (isBusy()) {
+                setPower(MotorPower);
+//                setPower(((-4.0 * MotorPower) / Math.pow(TotalTicks, 2.0)) * Math.pow(TotalTicks / 2.0 - getCurrentPosition(), 2.0) + MotorPower);
+            } else {
+                setPower(0);
+                move(getTargetPosition());
+            }
+        } else {
+            if (!isBusy()) move(getTargetPosition());
+        }
     }
 
     public void move(int position) {
@@ -69,10 +74,12 @@ public class Arm implements Component {
         MotorPower = motorPower;
         TotalTicks = position;
         StartingPosition = getCurrentPosition();
-        while (isBusy()) {
-            setPower(MotorPower);
+        if (!isTeleOp) {
+            while (isBusy()) {
+                setPower(MotorPower);
+            }
+            setPower(0);
         }
-        setPower(0);
     }
 
     public void setPower(double motorPower) {
