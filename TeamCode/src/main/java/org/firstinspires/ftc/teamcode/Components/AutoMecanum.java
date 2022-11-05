@@ -91,10 +91,9 @@ public class AutoMecanum implements Component {
                 prevError = proportional;
                 timer.reset();
             } else {
-                setMotors(motorPower);
-                opMode.idle(); // shouldn't need this line?
+//                setMotors(motorPower);
 //                setMotors(totalTicks / 2.0 > mecanum.frontLeft.getCurrentPosition() ? 1 : 0.5);
-//                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + motorPower);
+                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + motorPower);
                 mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
                 mecanum.telemetry.update();
             }
@@ -134,7 +133,6 @@ public class AutoMecanum implements Component {
 ////                timer.reset();
 //            } else {
 //                setMotors(updateMotorPower);
-////                opMode.idle(); // shouldn't need this line?
 ////                setMotors(updateTotalTicks / 2.0 > mecanum.frontLeft.getCurrentPosition() ? 1 : 0.5);
 ////                setMotors(((-4.0 * updateMotorPower) / Math.pow(updateTotalTicks, 2.0)) * Math.pow(updateTotalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + updateMotorPower);
 //                mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());

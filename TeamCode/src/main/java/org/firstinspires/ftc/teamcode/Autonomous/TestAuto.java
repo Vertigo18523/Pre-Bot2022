@@ -24,14 +24,14 @@ public class TestAuto extends BaseOpMode {
 
     @Override
     public void onStart() throws InterruptedException {
-        new Thread(
-            new Action(() -> {
-                robot.arm.move(robot.arm.HIGH_JUNCTION);
-            }, true)
-        ).start();
-        robot.mecanum.driveForward(24);
+//        new Thread(
+//            new Action(() -> {
+//                robot.arm.move(robot.arm.HIGH_JUNCTION);
+//            }, true)
+//        ).start();
+        robot.mecanum.driveForward(24, 1);
 
-        robot.arm.move(robot.arm.HIGH_JUNCTION);
-        robot.mecanum.driveBackward(24);
+//        robot.arm.move(robot.arm.HIGH_JUNCTION);
+//        robot.mecanum.driveBackward(24);
     }
 }
