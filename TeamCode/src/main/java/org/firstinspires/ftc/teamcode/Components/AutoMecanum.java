@@ -90,7 +90,7 @@ public class AutoMecanum implements Component {
                 prevError = proportional;
                 timer.reset();
             } else {
-                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + motorPower);
+                setMotors(((-4.0 * motorPower) / Math.pow(totalTicks, 2.0)) * Math.pow(totalTicks / 4.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + motorPower);
                 mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
                 mecanum.telemetry.update();
             }
@@ -119,7 +119,7 @@ public class AutoMecanum implements Component {
             return;
         }
 //        if (mecanum.frontLeft.getCurrentPosition() != mecanum.frontLeft.getTargetPosition()) {
-//            setMotors(((-4.0 * updateMotorPower) / Math.pow(updateTotalTicks, 2.0)) * Math.pow(updateTotalTicks / 2.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + updateMotorPower);
+//            setMotors(((-4.0 * updateMotorPower) / Math.pow(updateTotalTicks, 2.0)) * Math.pow(updateTotalTicks / 4.0 - mecanum.frontLeft.getCurrentPosition(), 2.0) + updateMotorPower);
 //            mecanum.telemetry.addData("motorPower", mecanum.frontLeft.getPower());
 //            mecanum.telemetry.update();
 //        } else {

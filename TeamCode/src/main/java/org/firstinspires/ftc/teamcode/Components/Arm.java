@@ -60,7 +60,7 @@ public class Arm implements Component {
                 move(getTargetPosition());
             }
         } else {
-            if (!isBusy()) move(getTargetPosition());
+            if (getCurrentPosition() != getTargetPosition()) move(getTargetPosition());
         }
     }
 
